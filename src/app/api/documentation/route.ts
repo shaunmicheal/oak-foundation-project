@@ -31,60 +31,56 @@ export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData()
 
-    const name = formData.get('name') as string | null
-    const website_url = formData.get('website_url') as string | null
-    const parent_partner_id = formData.get('parent_partner_id') as string | null
-    const sort_order = formData.get('sort_order') as string | null
-    const logoFile = formData.get('logo') as File | null
+    const event_day = formData.get('event_day') as string | null
+    const notes = formData.get('notes') as string | null
+    const photos = formData.getAll('photos') as File[]
 
-    if (!name) {
-      return NextResponse.json({ error: 'name is required.' }, { status: 400 })
+    if (!event_day) {
+      return NextResponse.json({ error: 'event_day is required.' }, { status: 400 })
     }
 
-    let logo_url: string | null = null
+    const photo_urls: string[] = []
 
-    if (logoFile && logoFile.size > 0) {
-      const fileExt = logoFile.name.split('.').pop()
-      const fileName = `${crypto.randomUUID()}.${fileExt}`
+    for (const photo of photos) {
+      if (!photo || photo.size === 0) continue
+
+      const fileExt = photo.name.split('.').pop()
+      const fileName = `${event_day}/${crypto.randomUUID()}.${fileExt}`
 
       const { error: uploadError } = await auth.adminSupabase.storage
-        .from('partner-logos')
-        .upload(fileName, logoFile, {
-          contentType: logoFile.type,
-        })
+        .from('event-photos')
+        .upload(fileName, photo, { contentType: photo.type })
 
       if (uploadError) {
-        console.error('Logo upload failed:', uploadError)
-        return NextResponse.json({ error: 'Logo upload failed.' }, { status: 500 })
+        console.error('Photo upload failed:', uploadError)
+        continue
       }
 
       const { data: publicUrlData } = auth.adminSupabase.storage
-        .from('partner-logos')
+        .from('event-photos')
         .getPublicUrl(fileName)
 
-      logo_url = publicUrlData.publicUrl
+      photo_urls.push(publicUrlData.publicUrl)
     }
 
     const { data, error } = await auth.adminSupabase
-      .from('partners')
+      .from('documentation_posts')
       .insert({
-        name,
-        logo_url,
-        website_url: website_url || null,
-        parent_partner_id: parent_partner_id || null,
-        sort_order: sort_order ? parseInt(sort_order) : 0,
+        event_day,
+        notes: notes || null,
+        photo_urls,
       })
       .select()
       .single()
 
     if (error) {
-      console.error('Partner insert failed:', error)
-      return NextResponse.json({ error: 'Could not create partner.' }, { status: 500 })
+      console.error('Documentation post insert failed:', error)
+      return NextResponse.json({ error: 'Could not create post.' }, { status: 500 })
     }
 
     return NextResponse.json(data, { status: 201 })
   } catch (err) {
-    console.error('Unexpected partner error:', err)
+    console.error('Unexpected documentation error:', err)
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 })
   }
 }
