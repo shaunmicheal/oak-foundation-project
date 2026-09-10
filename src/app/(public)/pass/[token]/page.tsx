@@ -62,7 +62,7 @@ export default function PassPage() {
   /* ── LOADING ── */
   if (state === "loading") {
     return (
-      <div className="max-w-[480px] mx-auto px-6 py-10">
+      <div className="max-w-120 mx-auto px-6 py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-10 h-10 rounded-full border-2 border-[#162E55] border-t-transparent animate-spin" />
@@ -76,7 +76,7 @@ export default function PassPage() {
   /* ── NOT FOUND ── */
   if (state === "not_found") {
     return (
-      <div className="max-w-[480px] mx-auto px-6 py-10">
+      <div className="max-w-120 mx-auto px-6 py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <div className="flex justify-center mb-4 text-slate-400">
             <svg
@@ -115,7 +115,7 @@ export default function PassPage() {
   /* ── ERROR ── */
   if (state === "error") {
     return (
-      <div className="max-w-[480px] mx-auto px-6 py-10">
+      <div className="max-w-120 mx-auto px-6 py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <p className="text-sm text-red-600 mb-4">
             Something went wrong loading your pass. Please check your connection
@@ -138,7 +138,7 @@ export default function PassPage() {
 
   /* ── SUCCESS ── */
   return (
-    <div className="max-w-[480px] mx-auto px-6 py-10">
+    <div className="max-w-120 mx-auto px-6 py-10">
       {/* Mobile logo */}
       <div className="flex justify-center mb-6 lg:hidden">
         <img
@@ -225,7 +225,7 @@ export default function PassPage() {
           <DetailRow label="Organisation" value={attendee!.organization} />
           <DetailRow label="Role" value={attendee!.role ?? "—"} />
           <DetailRow label="Email" value={attendee!.email ?? "—"} />
-          <DetailRow label="Event Dates" value="9–11 March 2026" />
+          <DetailRow label="Event Dates" value="9-11 March 2026" />
           <DetailRow label="Location" value="Harare, Zimbabwe" />
         </dl>
       </div>

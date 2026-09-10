@@ -18,14 +18,14 @@ const CARD_BORDER = 'border border-[rgba(28,46,90,0.1)]'
 
 export default function RegisterPage() {
   return (
-    <div className="max-w-[480px] mx-auto px-6 py-10">
+    <div className="max-w-120 mx-auto px-6 py-10">
       <div className="flex justify-center mb-6 lg:hidden">
         <img
           src="/logo.svg"
           alt="OAK Foundation"
           width={85}
           height={53}
-          className="w-[85px] object-contain"
+          className="w-21.25 object-contain"
         />
       </div>
 

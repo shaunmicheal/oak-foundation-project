@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 const QRScanner = dynamic(() => import("@/components/checkin/QRScanner"), {
   ssr: false,
   loading: () => (
-    <div className="w-full aspect-[4/3] max-h-72 bg-black rounded-2xl flex items-center justify-center">
+    <div className="w-full aspect-4/3 max-h-72 bg-black rounded-2xl flex items-center justify-center">
       <div className="w-8 h-8 rounded-full border-2 border-white border-t-transparent animate-spin" />
     </div>
   ),
