@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 type Headcount = {
   day: string;
@@ -47,25 +48,50 @@ function getInitials(name: string) {
 
 export default function AttendanceDashboard() {
   const [activeDay, setActiveDay] = useState(EVENT_DAYS[0].value);
-  const [headcount, setHeadcount] = useState<Headcount | null>(null);
-  const [headcountLoading, setHeadcountLoading] = useState(true);
+  // Headcount is cached per day; "loading" is derived from whether the
+  // selected day has finished loading (keeps setState out of effect bodies).
+  const [headcountByDay, setHeadcountByDay] = useState<
+    Record<string, Headcount>
+  >({});
+  const [headcountFailedDays, setHeadcountFailedDays] = useState<
+    Record<string, true>
+  >({});
+  const [sessionCount, setSessionCount] = useState<number | null>(null);
+  const headcount = headcountByDay[activeDay] ?? null;
+  const headcountLoading =
+    !(activeDay in headcountByDay) && !(activeDay in headcountFailedDays);
 
   const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [attendeesLoading, setAttendeesLoading] = useState(true);
   const [attendeesError, setAttendeesError] = useState(false);
+  const [attendeesLoadedKey, setAttendeesLoadedKey] = useState<string | null>(
+    null,
+  );
+  const [attendeesRetry, setAttendeesRetry] = useState(0);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const attendeesLoading = attendeesLoadedKey !== debouncedSearch;
 
   // Fetch headcount when day changes
   useEffect(() => {
-    setHeadcountLoading(true);
     fetch(`/api/headcount?day=${activeDay}`)
       .then(async (res) => {
         if (!res.ok) return;
         const data = await res.json();
-        setHeadcount(data);
+        setHeadcountByDay((prev) => ({ ...prev, [activeDay]: data }));
       })
-      .finally(() => setHeadcountLoading(false));
+      .catch(() =>
+        setHeadcountFailedDays((prev) => ({ ...prev, [activeDay]: true })),
+      );
+  }, [activeDay]);
+
+  // Session count for the Daily Overview (per design)
+  useEffect(() => {
+    const supabase = createClient();
+    supabase
+      .from("programme_sessions")
+      .select("id", { count: "exact", head: true })
+      .eq("event_day", activeDay)
+      .then(({ count }) => setSessionCount(count ?? 0));
   }, [activeDay]);
 
   // Debounce search input
@@ -74,10 +100,8 @@ export default function AttendanceDashboard() {
     return () => clearTimeout(t);
   }, [search]);
 
-  // Fetch attendees
-  const fetchAttendees = useCallback(() => {
-    setAttendeesLoading(true);
-    setAttendeesError(false);
+  // Fetch attendees whenever the debounced search changes (or on retry)
+  useEffect(() => {
     const qs = debouncedSearch
       ? `?search=${encodeURIComponent(debouncedSearch)}`
       : "";
@@ -86,26 +110,21 @@ export default function AttendanceDashboard() {
         if (!res.ok) throw new Error();
         const data = await res.json();
         setAttendees(data.attendees ?? []);
+        setAttendeesError(false);
+        setAttendeesLoadedKey(debouncedSearch);
       })
-      .catch(() => setAttendeesError(true))
-      .finally(() => setAttendeesLoading(false));
-  }, [debouncedSearch]);
-
-  useEffect(() => {
-    fetchAttendees();
-  }, [fetchAttendees]);
-
-  const pct =
-    headcount && headcount.total_registered > 0
-      ? Math.round((headcount.checked_in / headcount.total_registered) * 100)
-      : 0;
+      .catch(() => {
+        setAttendeesError(true);
+        setAttendeesLoadedKey(debouncedSearch);
+      });
+  }, [debouncedSearch, attendeesRetry]);
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
       <div>
         <h1 className="text-xl font-bold text-slate-900">Attendance</h1>
         <p className="text-sm text-slate-500 mt-0.5">
-          Check-in headcount and registered attendees
+          Check-in tracking · 9–11 March 2026
         </p>
       </div>
 
@@ -127,35 +146,88 @@ export default function AttendanceDashboard() {
         ))}
       </div>
 
-      {/* ── Headcount card ── */}
+      {/* ── Empty state (no check-ins yet) ── */}
+      {!headcountLoading && headcount && headcount.checked_in === 0 && (
+        <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-8 text-center">
+          <div className="flex justify-center mb-3">
+            <div className="w-11 h-11 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+                <circle cx="10" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-slate-800">
+            No check-ins yet
+          </p>
+          <p className="text-xs text-slate-400 mt-1 mb-4">
+            Attendees will appear here once they have been scanned at the event
+            entrance.
+          </p>
+          <a
+            href="/admin/checkin"
+            className="inline-flex items-center gap-2 bg-[#162E55] text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-[#0f2140] transition-colors"
+          >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Go to Check-in Scanner
+          </a>
+        </div>
+      )}
+
+      {/* ── Daily overview ── */}
       <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-5">
+        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-3">
+          Daily Overview
+        </p>
         {headcountLoading ? (
           <div className="flex justify-center py-4">
             <div className="w-6 h-6 rounded-full border-2 border-[#162E55] border-t-transparent animate-spin" />
           </div>
         ) : headcount ? (
-          <div>
-            <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-3">
-              Check-In Headcount
-            </p>
-            <div className="flex items-end gap-3 mb-3">
-              <p className="text-4xl font-bold text-[#162E55]">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
+              <p className="text-xl font-bold text-[#162E55]">
                 {headcount.checked_in}
               </p>
-              <p className="text-base text-slate-400 mb-1">
-                / {headcount.total_registered} registered
+              <p className="text-[11px] text-slate-400 mt-0.5">Checked In</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
+              <p className="text-xl font-bold text-[#162E55]">
+                {sessionCount ?? 0}
               </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Sessions</p>
             </div>
-            {/* Progress bar */}
-            <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
-              <div
-                className="h-full rounded-full bg-[#162E55] transition-all duration-500"
-                style={{ width: `${pct}%` }}
-              />
+            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
+              <p className="text-xl font-bold text-[#162E55]">
+                {headcount.total_registered}
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Registered</p>
             </div>
-            <p className="text-xs text-slate-400 mt-1.5">
-              {pct}% checked in for this day
-            </p>
           </div>
         ) : (
           <p className="text-sm text-slate-400 py-2">Headcount unavailable.</p>
@@ -226,7 +298,10 @@ export default function AttendanceDashboard() {
           <div className="rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-600 flex items-center justify-between">
             <span>Could not load attendees.</span>
             <button
-              onClick={fetchAttendees}
+              onClick={() => {
+                setAttendeesLoadedKey(null);
+                setAttendeesRetry((c) => c + 1);
+              }}
               className="text-red-600 underline text-xs"
             >
               Retry

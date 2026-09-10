@@ -140,7 +140,7 @@ export default function RegistrationForm() {
         />
       </Field>
 
-      <Field label="Sub-Partner / Programme Area">
+      <Field label="Sub Partner / Programme Area">
         <input
           type="text"
           value={form.subPartner}
@@ -180,7 +180,7 @@ export default function RegistrationForm() {
           type="tel"
           value={form.phone}
           onChange={(e) => updateField("phone", e.target.value)}
-          placeholder="+263 xx xxx xxxx"
+          placeholder="+41 xx xxx xx xx"
           className={inputClass(false)}
         />
       </Field>
@@ -195,7 +195,7 @@ export default function RegistrationForm() {
               type="text"
               value={form.dietaryNeeds}
               onChange={(e) => updateField("dietaryNeeds", e.target.value)}
-              placeholder="e.g. Vegetarian, Halal, Gluten-free"
+              placeholder="e.g., Vegetarian, Halal, Gluten-free"
               className={inputClass(false)}
             />
           </Field>
@@ -206,7 +206,7 @@ export default function RegistrationForm() {
               onChange={(e) =>
                 updateField("accessibilityNeeds", e.target.value)
               }
-              placeholder="e.g. Wheelchair access, hearing loop"
+              placeholder="e.g., Wheelchair access, hearing loop"
               className={inputClass(false)}
             />
           </Field>
@@ -215,7 +215,7 @@ export default function RegistrationForm() {
               type="text"
               value={form.travelNeeds}
               onChange={(e) => updateField("travelNeeds", e.target.value)}
-              placeholder="e.g. Flight from London, hotel needed"
+              placeholder="e.g., Flight from London, hotel needed"
               className={inputClass(false)}
             />
           </Field>
@@ -253,7 +253,7 @@ export default function RegistrationForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-[#162E55] text-white font-medium rounded-lg py-3 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#0f2140] transition-colors"
+        className="w-full bg-[#162E55] text-white font-medium rounded-xl py-3 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#0f2140] transition-colors"
       >
         {isSubmitting ? "Registering…" : "Register"}
       </button>
@@ -287,7 +287,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-slate-600 mb-1">
+      <label className="block text-[10px] font-semibold tracking-wider text-slate-500 uppercase mb-1">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}

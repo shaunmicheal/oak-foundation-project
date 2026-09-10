@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
+import { createClient } from "@/lib/supabase/client";
 
 const QRScanner = dynamic(() => import("@/components/checkin/QRScanner"), {
   ssr: false,
@@ -21,16 +22,28 @@ type CheckinState =
   | "not_found"
   | "error";
 
-type CheckedInAttendee = {
-  full_name: string;
-  organization: string;
-  role?: string;
-  checkedInAt: Date;
-};
-
 type SuccessData = {
   full_name: string;
   organization: string;
+};
+
+type AttendeeRow = {
+  id: string;
+  full_name: string;
+  organization: string;
+  role: string | null;
+  qr_token: string;
+};
+
+type NextSession = {
+  title: string;
+  start_time: string;
+  location: string | null;
+};
+
+type Headcount = {
+  checked_in: number;
+  total_registered: number;
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -57,8 +70,10 @@ function getInitials(name: string) {
     .join("");
 }
 
-function formatTime(d: Date) {
-  return d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+// Display a masked code in the design's "OAK 2026-XXXX-XXXX" style
+function maskedToken(token: string) {
+  const clean = token.replace(/-/g, "").slice(0, 4).toUpperCase();
+  return `${clean || "••••"}-XXXX-XXXX`;
 }
 
 function todayISO() {
@@ -73,16 +88,18 @@ export default function CheckInPage() {
   const [state, setState] = useState<CheckinState>("scanning");
   const [successData, setSuccessData] = useState<SuccessData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [recentlyCheckedIn, setRecentlyCheckedIn] = useState<
-    CheckedInAttendee[]
-  >([]);
   const [manualToken, setManualToken] = useState("");
   const [isManualChecking, setIsManualChecking] = useState(false);
+  const [lastToken, setLastToken] = useState("");
+  const [simAttendees, setSimAttendees] = useState<AttendeeRow[]>([]);
+  const [nextSession, setNextSession] = useState<NextSession | null>(null);
+  const [headcount, setHeadcount] = useState<Headcount | null>(null);
 
   // ── Process a scanned/manual token ─────────────────────────────────────────
 
   const processToken = useCallback(async (token: string) => {
     setScannerActive(false);
+    setLastToken(token.trim());
 
     try {
       const res = await fetch("/api/checkin", {
@@ -98,14 +115,6 @@ export default function CheckInPage() {
           full_name: data.full_name,
           organization: data.organization,
         });
-        setRecentlyCheckedIn((prev) => [
-          {
-            full_name: data.full_name,
-            organization: data.organization,
-            checkedInAt: new Date(),
-          },
-          ...prev.slice(0, 9),
-        ]);
         setState("success");
         return;
       }
@@ -167,6 +176,42 @@ export default function CheckInPage() {
     setScannerActive(true);
   }
 
+  // ── Load "Simulate or Scan" rows + success-screen context (per design) ──────
+  useEffect(() => {
+    fetch("/api/admin/attendees")
+      .then(async (res) => {
+        if (!res.ok) return;
+        const data = await res.json();
+        setSimAttendees((data.attendees ?? []).slice(0, 4));
+      })
+      .catch(() => {});
+
+    const today = todayISO();
+
+    // Next session today, for the success screen tiles + live status
+    const supabase = createClient();
+    supabase
+      .from("programme_sessions")
+      .select("title, start_time, location")
+      .eq("event_day", today)
+      .order("start_time", { ascending: true })
+      .then(({ data }) => {
+        if (!data || data.length === 0) return;
+        const now = new Date().toTimeString().slice(0, 5);
+        const upcoming = data.find(
+          (s: { start_time: string }) => s.start_time.slice(0, 5) >= now,
+        );
+        setNextSession(upcoming ?? data[0]);
+      });
+
+    fetch(`/api/headcount?day=${today}`)
+      .then(async (res) => {
+        if (!res.ok) return;
+        setHeadcount(await res.json());
+      })
+      .catch(() => {});
+  }, []);
+
   // ─────────────────────────────────────────────────────────────────────────────
   // RENDER
   // ─────────────────────────────────────────────────────────────────────────────
@@ -177,39 +222,110 @@ export default function CheckInPage() {
       {state === "success" && successData && (
         <div className="space-y-3">
           {/* Green banner */}
-          <div className="rounded-3xl bg-[#1a7a45] text-white px-5 py-4 flex items-center gap-3">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.15)" />
-              <polyline points="9 12 11 14 15 10" />
-            </svg>
-            <p className="text-base font-semibold">Checked In Successfully</p>
+          <div className="relative overflow-hidden rounded-3xl bg-[#1a7a45] text-white px-5 py-4 flex items-start gap-3">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-8 -top-12 w-36 h-36 rounded-full bg-white/15 blur-2xl"
+            />
+            <div className="shrink-0 mt-0.5 w-9 h-9 rounded-full bg-white/15 border border-white/25 flex items-center justify-center relative">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="7 12.5 10.5 16 17 8.5" />
+              </svg>
+            </div>
+            <div className="relative">
+              <p className="text-lg font-bold leading-snug">
+                Checked in Successfully
+              </p>
+              <p className="text-[11px] text-white/75 mt-0.5 font-mono tracking-wider">
+                OAK {maskedToken(lastToken)}
+              </p>
+            </div>
           </div>
 
           {/* Attendee card */}
           <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-5">
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-[#162E55] text-white flex items-center justify-center text-sm font-bold shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-[#162E55] text-white flex items-center justify-center text-sm font-bold shrink-0">
                 {getInitials(successData.full_name)}
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="font-semibold text-slate-900">
                   {successData.full_name}
                 </p>
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-500 truncate">
                   {successData.organization}
                 </p>
               </div>
             </div>
           </div>
+
+          {/* Next session / venue tiles */}
+          {nextSession && (
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-2xl border border-[rgba(28,46,90,0.1)] bg-white p-3">
+                <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-1">
+                  Next Session
+                </p>
+                <p className="text-sm font-semibold text-slate-800 leading-snug">
+                  {nextSession.title}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-[rgba(28,46,90,0.1)] bg-white p-3">
+                <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-1">
+                  Session Venue
+                </p>
+                <p className="text-sm font-semibold text-slate-800 leading-snug">
+                  {nextSession.location ?? "—"}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Live event status */}
+          {nextSession && headcount && (
+            <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-5">
+              <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-2">
+                Live Event Status
+              </p>
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                <p className="text-sm font-medium text-slate-800">
+                  {nextSession.title} starting at{" "}
+                  {nextSession.start_time.slice(0, 5)}
+                </p>
+              </div>
+              <div className="mt-2.5 h-1.5 rounded-full bg-slate-100 overflow-hidden">
+                <div
+                  className="h-full rounded-full bg-[#162E55] transition-all duration-500"
+                  style={{
+                    width: `${
+                      headcount.total_registered > 0
+                        ? Math.round(
+                            (headcount.checked_in /
+                              headcount.total_registered) *
+                              100,
+                          )
+                        : 0
+                    }%`,
+                  }}
+                />
+              </div>
+              <p className="text-xs text-slate-400 mt-1.5">
+                {headcount.checked_in} of {headcount.total_registered}{" "}
+                attendees checked in
+                {nextSession.location ? ` · ${nextSession.location}` : ""}
+              </p>
+            </div>
+          )}
 
           {/* Scan next button */}
           <button
@@ -226,10 +342,8 @@ export default function CheckInPage() {
               strokeLinecap="round"
               strokeLinejoin="round"
             >
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <path d="M14 14h7v7h-7z" />
+              <polyline points="23 4 23 10 17 10" />
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
             </svg>
             Scan Next Attendee
           </button>
@@ -274,27 +388,32 @@ export default function CheckInPage() {
       {state === "not_found" && (
         <div className="space-y-3">
           {/* Red error banner */}
-          <div className="rounded-3xl bg-[#c0392b] text-white px-5 py-4 flex items-start gap-3">
-            <svg
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="shrink-0 mt-0.5"
-            >
-              <circle cx="12" cy="12" r="10" fill="rgba(255,255,255,0.15)" />
-              <line x1="15" y1="9" x2="9" y2="15" />
-              <line x1="9" y1="9" x2="15" y2="15" />
-            </svg>
-            <div>
+          <div className="relative overflow-hidden rounded-3xl bg-[#d64541] text-white px-5 py-4 flex items-start gap-3">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute -right-8 -top-12 w-36 h-36 rounded-full bg-white/15 blur-2xl"
+            />
+            <div className="shrink-0 mt-0.5 w-9 h-9 rounded-full bg-white/15 border border-white/25 flex items-center justify-center relative">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <line x1="9" y1="9" x2="15" y2="15" />
+              </svg>
+            </div>
+            <div className="relative">
               <p className="text-[10px] font-semibold tracking-widest uppercase text-white/70 mb-0.5">
-                QR Not Recognised
+                Check-In Failed
               </p>
-              <p className="text-base font-bold">
+              <p className="text-base font-bold">QR Not Recognised</p>
+              <p className="text-xs text-white/80 mt-0.5">
                 Code is invalid or unregistered
               </p>
             </div>
@@ -345,7 +464,7 @@ export default function CheckInPage() {
 
           <button
             onClick={reset}
-            className="w-full text-sm text-slate-500 hover:text-slate-700 transition-colors flex items-center justify-center gap-1.5 py-1"
+            className="w-full text-sm font-medium text-slate-600 border border-slate-200 rounded-2xl py-3 hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
           >
             <svg
               width="14"
@@ -398,7 +517,7 @@ export default function CheckInPage() {
         <div className="space-y-4">
           {/* Page header */}
           <div className="mb-1">
-            <h1 className="text-xl font-bold text-slate-900">Event Check-In</h1>
+            <h1 className="text-xl font-bold text-slate-900">Event Check-in</h1>
             <p className="text-sm text-slate-500 mt-0.5">
               Scan an attendee QR code to check them in
             </p>
@@ -407,28 +526,28 @@ export default function CheckInPage() {
           {/* Camera scanner */}
           <QRScanner onScan={handleScan} isActive={scannerActive} />
 
-          <p className="text-center text-xs text-slate-400">
-            Point the QR code at the camera
-          </p>
-
-          {/* Recently checked in */}
-          {recentlyCheckedIn.length > 0 && (
+          {/* Simulate or scan (per design) */}
+          {simAttendees.length > 0 && (
             <div>
               <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-2">
-                Recently Checked In
+                Simulate or Scan
               </p>
               <div className="rounded-2xl border border-[rgba(28,46,90,0.1)] bg-white divide-y divide-slate-100 overflow-hidden">
-                {recentlyCheckedIn.slice(0, 5).map((a, i) => (
-                  <div key={i} className="flex items-center gap-3 px-4 py-3">
-                    <div className="w-8 h-8 rounded-full bg-[#162E55] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                {simAttendees.map((a) => (
+                  <button
+                    key={a.id}
+                    onClick={() => processToken(a.qr_token)}
+                    className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-slate-50 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-[#162E55] text-white flex items-center justify-center text-xs font-bold shrink-0">
                       {getInitials(a.full_name)}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-slate-800 truncate">
                         {a.full_name}
                       </p>
-                      <p className="text-xs text-slate-400 truncate">
-                        {a.organization} · {formatTime(a.checkedInAt)}
+                      <p className="text-xs text-slate-400 truncate font-mono">
+                        OAK {maskedToken(a.qr_token)}
                       </p>
                     </div>
                     {a.role && (
@@ -438,7 +557,7 @@ export default function CheckInPage() {
                         {a.role}
                       </span>
                     )}
-                  </div>
+                  </button>
                 ))}
               </div>
             </div>
@@ -449,19 +568,19 @@ export default function CheckInPage() {
             <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-2">
               Manual Code Entry
             </p>
-            <div className="flex gap-2">
+            <div className="flex gap-2 rounded-2xl border border-[rgba(28,46,90,0.1)] bg-white p-2.5 shadow-[0_2px_8px_rgba(28,46,90,0.04)]">
               <input
                 type="text"
                 value={manualToken}
                 onChange={(e) => setManualToken(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleManualCheck()}
-                placeholder="OAK 2026 XXXX-XXXX"
-                className="flex-1 rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55] placeholder:text-slate-400"
+                placeholder="OAK-2026-XXXX-XXXX"
+                className="flex-1 rounded-xl border border-slate-100 bg-slate-50 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55] placeholder:text-slate-400"
               />
               <button
                 onClick={handleManualCheck}
                 disabled={isManualChecking || !manualToken.trim()}
-                className="bg-[#162E55] text-white text-sm font-medium px-4 py-2.5 rounded-xl hover:bg-[#0f2140] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="bg-[#162E55] text-white text-sm font-medium px-5 py-2.5 rounded-xl hover:bg-[#0f2140] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isManualChecking ? "…" : "Check"}
               </button>
