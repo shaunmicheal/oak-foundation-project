@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, FormEvent, ReactNode } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  FormEvent,
+  ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 
 const ROLE_OPTIONS = [
@@ -151,18 +157,11 @@ export default function RegistrationForm() {
       </Field>
 
       <Field label="Role / Capacity" required error={errors.role}>
-        <select
+        <RoleSelect
           value={form.role}
-          onChange={(e) => updateField("role", e.target.value)}
-          className={inputClass(!!errors.role)}
-        >
-          <option value="">Select your role</option>
-          {ROLE_OPTIONS.map((role) => (
-            <option key={role} value={role}>
-              {role}
-            </option>
-          ))}
-        </select>
+          hasError={!!errors.role}
+          onChange={(role) => updateField("role", role)}
+        />
       </Field>
 
       <Field label="Email Address" required error={errors.email}>
@@ -268,10 +267,147 @@ export default function RegistrationForm() {
 
 function inputClass(hasError: boolean) {
   return [
-    "w-full rounded-lg border px-3 py-2 text-sm placeholder:text-slate-400",
+    "w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400",
     "focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55]",
     hasError ? "border-red-400" : "border-slate-200",
   ].join(" ");
+}
+
+/** Custom dropdown for Role / Capacity — styled to match the text inputs. */
+function RoleSelect({
+  value,
+  hasError,
+  onChange,
+}: {
+  value: string;
+  hasError: boolean;
+  onChange: (role: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [highlight, setHighlight] = useState(0);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click / Escape
+  useEffect(() => {
+    if (!open) return;
+    function onPointerDown(e: MouseEvent) {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node))
+        setOpen(false);
+    }
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "Escape") setOpen(false);
+    }
+    document.addEventListener("mousedown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [open]);
+
+  function toggle() {
+    if (open) {
+      setOpen(false);
+      return;
+    }
+    setHighlight(Math.max(0, ROLE_OPTIONS.indexOf(value)));
+    setOpen(true);
+  }
+
+  function commit(index: number) {
+    onChange(ROLE_OPTIONS[index]);
+    setOpen(false);
+  }
+
+  return (
+    <div className="relative" ref={rootRef}>
+      <button
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        onClick={toggle}
+        onKeyDown={(e) => {
+          if (!open) return;
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            setHighlight((h) => Math.min(h + 1, ROLE_OPTIONS.length - 1));
+          } else if (e.key === "ArrowUp") {
+            e.preventDefault();
+            setHighlight((h) => Math.max(h - 1, 0));
+          } else if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            commit(highlight);
+          }
+        }}
+        className={[
+          "w-full rounded-lg border bg-white px-3 py-2 text-sm flex items-center justify-between gap-2 text-left",
+          "focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55]",
+          hasError ? "border-red-400" : "border-slate-200",
+        ].join(" ")}
+      >
+        <span className={value ? "text-slate-900" : "text-slate-400"}>
+          {value || "Select your role"}
+        </span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={`shrink-0 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+
+      {open && (
+        <ul
+          role="listbox"
+          className="absolute z-20 mt-1.5 w-full rounded-xl border border-slate-200 bg-white py-1 shadow-[0_8px_24px_rgba(28,46,90,0.12)] max-h-56 overflow-auto"
+        >
+          {ROLE_OPTIONS.map((role, i) => {
+            const selected = value === role;
+            const active = i === highlight;
+            return (
+              <li key={role} role="option" aria-selected={selected}>
+                <button
+                  type="button"
+                  onClick={() => commit(i)}
+                  onMouseEnter={() => setHighlight(i)}
+                  className={[
+                    "w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left transition-colors",
+                    active
+                      ? "bg-[#162E55]/5 text-[#162E55] font-medium"
+                      : "text-slate-700",
+                  ].join(" ")}
+                >
+                  {role}
+                  {selected && (
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="shrink-0 text-[#162E55]"
+                    >
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  )}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
 }
 
 function Field({

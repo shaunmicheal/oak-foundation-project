@@ -421,10 +421,28 @@ export default function CheckInPage() {
 
           {/* Possible reasons */}
           <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-5">
-            <p className="text-sm font-medium text-slate-700 mb-3">
-              Possible reasons:
-            </p>
-            <ul className="space-y-2">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-7 h-7 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
+                <svg
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                  <line x1="12" y1="9" x2="12" y2="13" />
+                  <line x1="12" y1="17" x2="12.01" y2="17" />
+                </svg>
+              </span>
+              <p className="text-sm font-semibold text-slate-800">
+                Possible reasons
+              </p>
+            </div>
+            <ul className="space-y-2.5">
               {[
                 "QR code belongs to a different event",
                 "Registration was not completed",
@@ -433,9 +451,9 @@ export default function CheckInPage() {
               ].map((reason) => (
                 <li
                   key={reason}
-                  className="flex items-start gap-2 text-sm text-slate-600"
+                  className="flex items-start gap-2.5 text-sm text-slate-600"
                 >
-                  <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-red-500 shrink-0" />
+                  <span className="mt-1 w-2.5 h-2.5 rounded-full border-2 border-red-400 bg-white shrink-0" />
                   {reason}
                 </li>
               ))}

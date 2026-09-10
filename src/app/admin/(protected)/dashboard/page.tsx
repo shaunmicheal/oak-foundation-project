@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
 
 type Headcount = {
   day: string;
@@ -56,7 +55,6 @@ export default function AttendanceDashboard() {
   const [headcountFailedDays, setHeadcountFailedDays] = useState<
     Record<string, true>
   >({});
-  const [sessionCount, setSessionCount] = useState<number | null>(null);
   const headcount = headcountByDay[activeDay] ?? null;
   const headcountLoading =
     !(activeDay in headcountByDay) && !(activeDay in headcountFailedDays);
@@ -82,16 +80,6 @@ export default function AttendanceDashboard() {
       .catch(() =>
         setHeadcountFailedDays((prev) => ({ ...prev, [activeDay]: true })),
       );
-  }, [activeDay]);
-
-  // Session count for the Daily Overview (per design)
-  useEffect(() => {
-    const supabase = createClient();
-    supabase
-      .from("programme_sessions")
-      .select("id", { count: "exact", head: true })
-      .eq("event_day", activeDay)
-      .then(({ count }) => setSessionCount(count ?? 0));
   }, [activeDay]);
 
   // Debounce search input
@@ -199,10 +187,10 @@ export default function AttendanceDashboard() {
         </div>
       )}
 
-      {/* ── Daily overview ── */}
+      {/* ── Event overview ── */}
       <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-5">
         <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-3">
-          Daily Overview
+          Event Overview
         </p>
         {headcountLoading ? (
           <div className="flex justify-center py-4">
@@ -212,21 +200,21 @@ export default function AttendanceDashboard() {
           <div className="grid grid-cols-3 gap-3">
             <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
               <p className="text-xl font-bold text-[#162E55]">
+                {headcount.total_registered}
+              </p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Expected</p>
+            </div>
+            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
+              <p className="text-xl font-bold text-[#162E55]">
                 {headcount.checked_in}
               </p>
               <p className="text-[11px] text-slate-400 mt-0.5">Checked In</p>
             </div>
             <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
               <p className="text-xl font-bold text-[#162E55]">
-                {sessionCount ?? 0}
+                {Math.max(headcount.total_registered - headcount.checked_in, 0)}
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Sessions</p>
-            </div>
-            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
-              <p className="text-xl font-bold text-[#162E55]">
-                {headcount.total_registered}
-              </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Registered</p>
+              <p className="text-[11px] text-slate-400 mt-0.5">Pending</p>
             </div>
           </div>
         ) : (
