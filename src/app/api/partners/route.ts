@@ -29,21 +29,50 @@ export async function POST(request: NextRequest) {
   if (auth.error) return auth.error
 
   try {
-    const body = await request.json()
-    const { name, logo_url, website_url, parent_partner_id, sort_order } = body
+    const formData = await request.formData()
+
+    const name = formData.get('name') as string | null
+    const website_url = formData.get('website_url') as string | null
+    const parent_partner_id = formData.get('parent_partner_id') as string | null
+    const sort_order = formData.get('sort_order') as string | null
+    const logoFile = formData.get('logo') as File | null
 
     if (!name) {
       return NextResponse.json({ error: 'name is required.' }, { status: 400 })
+    }
+
+    let logo_url: string | null = null
+
+    if (logoFile && logoFile.size > 0) {
+      const fileExt = logoFile.name.split('.').pop()
+      const fileName = `${crypto.randomUUID()}.${fileExt}`
+
+      const { error: uploadError } = await auth.adminSupabase.storage
+        .from('partner-logos')
+        .upload(fileName, logoFile, {
+          contentType: logoFile.type,
+        })
+
+      if (uploadError) {
+        console.error('Logo upload failed:', uploadError)
+        return NextResponse.json({ error: 'Logo upload failed.' }, { status: 500 })
+      }
+
+      const { data: publicUrlData } = auth.adminSupabase.storage
+        .from('partner-logos')
+        .getPublicUrl(fileName)
+
+      logo_url = publicUrlData.publicUrl
     }
 
     const { data, error } = await auth.adminSupabase
       .from('partners')
       .insert({
         name,
-        logo_url: logo_url ?? null,
-        website_url: website_url ?? null,
-        parent_partner_id: parent_partner_id ?? null,
-        sort_order: sort_order ?? 0,
+        logo_url,
+        website_url: website_url || null,
+        parent_partner_id: parent_partner_id || null,
+        sort_order: sort_order ? parseInt(sort_order) : 0,
       })
       .select()
       .single()
