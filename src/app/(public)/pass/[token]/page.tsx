@@ -8,6 +8,10 @@ type AttendeeData = {
   full_name: string;
   organization: string;
   qr_token: string;
+  // Returned by /api/attendees/[token] when the backend includes them.
+  // Rendered with a fallback until the endpoint exposes role + email.
+  role?: string;
+  email?: string;
 };
 
 type PageState = "loading" | "success" | "not_found" | "error";
@@ -17,14 +21,12 @@ export default function PassPage() {
   const router = useRouter();
   const token = params.token as string;
 
-  const [state, setState] = useState<PageState>("loading");
+  const [state, setState] = useState<PageState>(token ? "loading" : "not_found");
+  const [retryCount, setRetryCount] = useState(0);
   const [attendee, setAttendee] = useState<AttendeeData | null>(null);
 
   useEffect(() => {
-    if (!token) {
-      setState("not_found");
-      return;
-    }
+    if (!token) return;
 
     fetch(`/api/attendees/${token}`)
       .then(async (res) => {
@@ -41,7 +43,7 @@ export default function PassPage() {
         setState("success");
       })
       .catch(() => setState("error"));
-  }, [token]);
+  }, [token, retryCount]);
 
   function downloadQR() {
     const canvas = document.getElementById(
@@ -60,7 +62,7 @@ export default function PassPage() {
   /* ── LOADING ── */
   if (state === "loading") {
     return (
-      <div className="max-w-2xl mx-auto px-8 py-10">
+      <div className="max-w-120 mx-auto px-6 py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-10 h-10 rounded-full border-2 border-[#162E55] border-t-transparent animate-spin" />
@@ -74,7 +76,7 @@ export default function PassPage() {
   /* ── NOT FOUND ── */
   if (state === "not_found") {
     return (
-      <div className="max-w-2xl mx-auto px-8 py-10">
+      <div className="max-w-120 mx-auto px-6 py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <div className="flex justify-center mb-4 text-slate-400">
             <svg
@@ -113,7 +115,7 @@ export default function PassPage() {
   /* ── ERROR ── */
   if (state === "error") {
     return (
-      <div className="max-w-2xl mx-auto px-8 py-10">
+      <div className="max-w-120 mx-auto px-6 py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <p className="text-sm text-red-600 mb-4">
             Something went wrong loading your pass. Please check your connection
@@ -123,6 +125,7 @@ export default function PassPage() {
             onClick={() => {
               setState("loading");
               setAttendee(null);
+              setRetryCount((c) => c + 1);
             }}
             className="text-sm text-[#162E55] underline"
           >
@@ -135,7 +138,7 @@ export default function PassPage() {
 
   /* ── SUCCESS ── */
   return (
-    <div className="max-w-2xl mx-auto px-8 py-10">
+    <div className="max-w-120 mx-auto px-6 py-10">
       {/* Mobile logo */}
       <div className="flex justify-center mb-6 lg:hidden">
         <img
@@ -148,36 +151,36 @@ export default function PassPage() {
       </div>
 
       {/* ── SUCCESS BANNER ── */}
-      <div className="rounded-3xl bg-[#1a7a45] text-white px-5 py-4 flex items-start gap-4 mb-3 shadow-[0_4px_16px_rgba(22,46,85,0.12)]">
-        <div className="shrink-0 mt-0.5">
+      <div className="relative overflow-hidden rounded-3xl bg-[#162E55] text-white px-5 py-4 flex items-start gap-4 mb-3 shadow-[0_4px_16px_rgba(22,46,85,0.18)]">
+        {/* Soft radial highlight, as per the design */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-12 w-36 h-36 rounded-full bg-[#5b7cae]/60 blur-2xl"
+        />
+        <div className="shrink-0 mt-0.5 w-9 h-9 rounded-full bg-white/15 border border-white/25 flex items-center justify-center relative">
           <svg
-            width="28"
-            height="28"
+            width="16"
+            height="16"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
+            stroke="white"
+            strokeWidth="2.5"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <circle
-              cx="12"
-              cy="12"
-              r="10"
-              fill="rgba(255,255,255,0.15)"
-              stroke="white"
-            />
-            <polyline points="9 12 11 14 15 10" />
+            <polyline points="7 12.5 10.5 16 17 8.5" />
           </svg>
         </div>
-        <div>
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-white/70 mb-0.5">
+        <div className="relative">
+          <p className="text-[10px] font-semibold tracking-widest uppercase text-white/60 mb-1">
             Registration Complete
           </p>
-          <p className="text-xl font-bold leading-tight">
-            You&apos;re Registered, {firstName}!
+          <p className="text-xl font-bold leading-snug">
+            You&apos;re Registered,
+            <br />
+            {firstName}!
           </p>
-          <p className="text-sm text-white/70 mt-0.5">
+          <p className="text-xs text-white/70 mt-1">
             {attendee!.organization}
           </p>
         </div>
@@ -195,7 +198,7 @@ export default function PassPage() {
             <QRCodeCanvas
               id="qr-download-canvas"
               value={attendee!.qr_token}
-              size={200}
+              size={176}
               marginSize={1}
               level="M"
               fgColor="#162E55"
@@ -204,10 +207,11 @@ export default function PassPage() {
         </div>
 
         <p className="text-center font-mono text-[11px] text-slate-400 tracking-wider mb-1">
-          {attendee!.qr_token.slice(0, 8).toUpperCase()}…
+          URL DATA:{" "}
+          {attendee!.qr_token.replace(/-/g, "").slice(0, 8).toUpperCase()}
         </p>
         <p className="text-center text-xs text-slate-400">
-          Present this code at the venue for check-in
+          Present at event entrance for check-in
         </p>
       </div>
 
@@ -219,7 +223,9 @@ export default function PassPage() {
         <dl className="divide-y divide-slate-100">
           <DetailRow label="Name" value={attendee!.full_name} />
           <DetailRow label="Organisation" value={attendee!.organization} />
-          <DetailRow label="Event Dates" value="9–11 March 2026" />
+          <DetailRow label="Role" value={attendee!.role ?? "—"} />
+          <DetailRow label="Email" value={attendee!.email ?? "—"} />
+          <DetailRow label="Event Dates" value="9-11 March 2026" />
           <DetailRow label="Location" value="Harare, Zimbabwe" />
         </dl>
       </div>
@@ -227,7 +233,7 @@ export default function PassPage() {
       {/* ── DOWNLOAD BUTTON ── */}
       <button
         onClick={downloadQR}
-        className="w-full flex items-center justify-center gap-2 border border-[#162E55] text-[#162E55] font-medium rounded-2xl py-3 text-sm hover:bg-[#162E55]/5 transition-colors mb-3"
+        className="w-full flex items-center justify-center gap-2 bg-[#162E55] text-white font-medium rounded-2xl py-3 text-sm shadow-[0_6px_16px_rgba(22,46,85,0.25)] hover:bg-[#0f2140] transition-colors mb-3"
       >
         <svg
           width="16"
@@ -250,8 +256,21 @@ export default function PassPage() {
       <p className="text-center text-xs text-slate-400">
         <a
           href="/register"
-          className="hover:text-[#162E55] transition-colors underline underline-offset-2"
+          className="inline-flex items-center gap-1.5 hover:text-[#162E55] transition-colors"
         >
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
           Register another attendee
         </a>
       </p>
@@ -263,7 +282,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between py-2.5 text-sm">
       <dt className="text-slate-500">{label}</dt>
-      <dd className="font-medium text-slate-800 text-right max-w-[60%]">
+      <dd className="font-semibold text-slate-800 text-right max-w-[60%]">
         {value}
       </dd>
     </div>

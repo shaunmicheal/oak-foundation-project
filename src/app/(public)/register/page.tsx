@@ -18,40 +18,58 @@ const CARD_BORDER = 'border border-[rgba(28,46,90,0.1)]'
 
 export default function RegisterPage() {
   return (
-    <div className="max-w-2xl mx-auto px-8 py-10">
+    <div className="max-w-120 mx-auto px-6 py-10">
       <div className="flex justify-center mb-6 lg:hidden">
         <img
           src="/logo.svg"
           alt="OAK Foundation"
           width={85}
           height={53}
-          className="w-21.25 h-13.25 object-contain"
+          className="w-21.25 object-contain"
         />
       </div>
 
+      {/* ── EVENT BANNER ── */}
       <div
-        className={`relative overflow-hidden rounded-3xl bg-[#162E55] text-white h-41.75 px-6 pt-6 ${CARD_SHADOW}`}
+        className={`relative overflow-hidden rounded-3xl bg-[#162E55] text-white px-6 py-7 ${CARD_SHADOW}`}
       >
-        <h1 className="text-2xl font-bold">{EVENT_DETAILS.title}</h1>
-        <p className="text-sm text-white/80 mt-1">
-          {EVENT_DETAILS.location} · {EVENT_DETAILS.dates}
-        </p>
+        {/* Soft radial highlight, as per the design */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-8 -top-14 w-40 h-40 rounded-full bg-[#5b7cae]/60 blur-2xl"
+        />
+        <div className="relative">
+          <h1 className="text-2xl font-bold leading-snug">
+            Partner
+            <br />
+            Convening 2026
+          </h1>
+          <p className="text-sm text-white/80 mt-1.5">
+            {EVENT_DETAILS.location} · {EVENT_DETAILS.dates}
+          </p>
+        </div>
       </div>
 
+      {/* ── EVENT STATS ── */}
       <div className="grid grid-cols-3 gap-3 mt-3">
         {STATS.map((stat) => (
           <div
             key={stat.label}
-            className={`rounded-3xl ${CARD_BORDER} bg-white p-4 flex flex-col items-center gap-1.5 text-center`}
+            className={`rounded-3xl ${CARD_BORDER} bg-white p-4 flex flex-col items-start gap-1.5 ${CARD_SHADOW}`}
           >
             <div className="text-[#162E55]">{stat.icon}</div>
-            <p className="text-lg font-bold text-[#162E55]">{stat.value}</p>
+            <p className="text-lg font-bold text-[#162E55] leading-none">
+              {stat.value}
+            </p>
             <p className="text-xs text-slate-500">{stat.label}</p>
           </div>
         ))}
       </div>
 
-      <div className={`mt-4 rounded-3xl ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW}`}>
+      {/* ── FORM CARD ── */}
+      <div
+        className={`mt-4 rounded-3xl ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW}`}
+      >
         <h2 className="text-base font-semibold text-slate-900 mb-4">
           Registration Form
         </h2>
