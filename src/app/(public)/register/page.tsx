@@ -14,7 +14,7 @@ const STATS = [
 
 export default function RegisterPage() {
   return (
-    <div className="mx-auto w-full max-w-152 px-5 pt-5 pb-12 lg:px-0 lg:py-10">
+    <div className="mx-auto w-full max-w-102.5 px-5 pt-5 pb-12 lg:max-w-152 lg:px-0 lg:py-10">
       {/* ── EVENT HERO ── */}
       <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#1c3560] via-[#162E55] to-[#101f3d] px-7 py-8 text-white shadow-[0_12px_32px_rgba(22,46,85,0.28)]">
         {/* Soft sheen highlights, as per the design */}
