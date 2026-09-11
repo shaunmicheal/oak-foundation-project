@@ -36,6 +36,12 @@ export async function POST(request: NextRequest) {
     const parent_partner_id = formData.get('parent_partner_id') as string | null
     const sort_order = formData.get('sort_order') as string | null
     const logoFile = formData.get('logo') as File | null
+    const category = formData.get('category') as string | null
+    const partner_since = formData.get('partner_since') as string | null
+    const description = formData.get('description') as string | null
+    const focus_areas = formData.get('focus_areas') as string | null
+    const contact_name = formData.get('contact_name') as string | null
+    const contact_email = formData.get('contact_email') as string | null
 
     if (!name) {
       return NextResponse.json({ error: 'name is required.' }, { status: 400 })
@@ -73,6 +79,12 @@ export async function POST(request: NextRequest) {
         website_url: website_url || null,
         parent_partner_id: parent_partner_id || null,
         sort_order: sort_order ? parseInt(sort_order) : 0,
+        category,
+        partner_since: partner_since ? parseInt(partner_since) : null,
+        description,
+        focus_areas: focus_areas ? focus_areas.split(',').map((s: string) => s.trim()).filter(Boolean) : null,
+        contact_name,
+        contact_email,
       })
       .select()
       .single()
