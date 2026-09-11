@@ -62,7 +62,7 @@ export default function PassPage() {
   /* ── LOADING ── */
   if (state === "loading") {
     return (
-      <div className="max-w-120 mx-auto px-6 py-10">
+      <div className="mx-auto w-full max-w-102.5 px-5 pt-5 pb-12 lg:max-w-152 lg:px-0 lg:py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <div className="flex justify-center mb-4">
             <div className="w-10 h-10 rounded-full border-2 border-[#162E55] border-t-transparent animate-spin" />
@@ -76,7 +76,7 @@ export default function PassPage() {
   /* ── NOT FOUND ── */
   if (state === "not_found") {
     return (
-      <div className="max-w-120 mx-auto px-6 py-10">
+      <div className="mx-auto w-full max-w-102.5 px-5 pt-5 pb-12 lg:max-w-152 lg:px-0 lg:py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <div className="flex justify-center mb-4 text-slate-400">
             <svg
@@ -115,7 +115,7 @@ export default function PassPage() {
   /* ── ERROR ── */
   if (state === "error") {
     return (
-      <div className="max-w-120 mx-auto px-6 py-10">
+      <div className="mx-auto w-full max-w-102.5 px-5 pt-5 pb-12 lg:max-w-152 lg:px-0 lg:py-10">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 text-center">
           <p className="text-sm text-red-600 mb-4">
             Something went wrong loading your pass. Please check your connection
@@ -138,52 +138,59 @@ export default function PassPage() {
 
   /* ── SUCCESS ── */
   return (
-    <div className="max-w-120 mx-auto px-6 py-10">
+    <div className="mx-auto w-full max-w-102.5 px-5 pt-5 pb-12 lg:max-w-152 lg:px-0 lg:py-10">
       {/* ── SUCCESS BANNER ── */}
-      <div className="relative overflow-hidden rounded-3xl bg-[#162E55] text-white px-5 py-4 flex items-start gap-4 mb-3 shadow-[0_4px_16px_rgba(22,46,85,0.18)]">
-        {/* Soft radial highlight, as per the design */}
+      <div className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#1c3560] via-[#162E55] to-[#101f3d] text-white px-6 py-6 mb-4 shadow-[0_12px_32px_rgba(22,46,85,0.28)]">
+        {/* Soft sheen highlights, as per the design */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-8 -top-12 w-36 h-36 rounded-full bg-[#5b7cae]/60 blur-2xl"
+          className="pointer-events-none absolute -right-10 -top-20 h-48 w-48 rounded-full bg-[#4b6ea8]/50 blur-2xl"
         />
-        <div className="shrink-0 w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center relative">
-          <svg
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="white"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="7 12.5 10.5 16 17 8.5" />
-          </svg>
-        </div>
-        <div className="relative">
-          <p className="text-[10px] font-semibold tracking-widest uppercase text-white/60 mb-1">
-            Registration Complete
-          </p>
-          <p className="text-2xl font-bold leading-tight font-display">
-            You&apos;re Registered,
-            <br />
-            {firstName}!
-          </p>
-          <p className="text-xs text-white/70 mt-1">
-            {attendee!.organization}
-          </p>
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -left-20 -bottom-24 h-40 w-40 rounded-full bg-[#2c4a80]/40 blur-2xl"
+        />
+        <div className="relative flex items-start gap-4">
+          <div className="shrink-0 w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="9" />
+              <path d="m8.4 12.3 2.5 2.5 4.7-5.3" />
+            </svg>
+          </div>
+          <div>
+            <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-white/60">
+              Registration Complete
+            </p>
+            <p className="mt-1.5 font-display text-2xl sm:text-3xl font-bold leading-[1.15] tracking-tight">
+              You&apos;re Registered,
+              <br />
+              {firstName}!
+            </p>
+            <p className="mt-2 text-[13px] text-white/70">
+              {attendee!.organization}
+            </p>
+          </div>
         </div>
       </div>
 
       {/* ── QR PASS CARD ── */}
-      <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07),0_1px_3px_rgba(28,46,90,0.05)] p-5 mb-3">
-        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-4 text-center">
+      <div className="rounded-3xl border border-[#1C2E5A1A] bg-white p-6 mb-4 shadow-[0_4px_16px_#1C2E5A12,0_1px_3px_#1C2E5A0D]">
+        <p className="text-center text-[11px] font-semibold tracking-[0.14em] text-slate-400 uppercase">
           Your Entry Pass
         </p>
 
-        {/* Visible QR (SVG-style canvas for crisp display) */}
-        <div className="flex justify-center mb-3">
-          <div className="rounded-2xl border border-[rgba(28,46,90,0.1)] p-3 bg-white">
+        {/* Visible QR (canvas, reused for the PNG download) */}
+        <div className="mt-5 flex justify-center">
+          <div className="rounded-[20px] bg-slate-100 p-6">
             <QRCodeCanvas
               id="qr-download-canvas"
               value={attendee!.qr_token}
@@ -195,7 +202,7 @@ export default function PassPage() {
           </div>
         </div>
 
-        <p className="text-center font-mono text-[11px] text-slate-400 tracking-[0.18em] mb-1">
+        <p className="mt-5 text-center font-mono text-xs text-slate-400 tracking-[0.18em]">
           OAK-2026-
           {attendee!.qr_token.replace(/-/g, "").slice(0, 4).toUpperCase() ||
             "••••"}
@@ -203,17 +210,17 @@ export default function PassPage() {
           {attendee!.qr_token.replace(/-/g, "").slice(4, 8).toUpperCase() ||
             "••••"}
         </p>
-        <p className="text-center text-xs text-slate-400">
+        <p className="mt-1.5 text-center text-[13px] text-slate-400">
           Present at event entrance for check-in
         </p>
       </div>
 
       {/* ── REGISTRATION DETAILS ── */}
-      <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07),0_1px_3px_rgba(28,46,90,0.05)] p-5 mb-4">
-        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-3">
+      <div className="rounded-3xl border border-[#1C2E5A1A] bg-white p-6 shadow-[0_4px_16px_#1C2E5A12,0_1px_3px_#1C2E5A0D]">
+        <p className="text-[11px] font-semibold tracking-[0.14em] text-slate-400 uppercase">
           Registration Details
         </p>
-        <dl className="divide-y divide-slate-100">
+        <dl className="mt-1 divide-y divide-slate-100">
           <DetailRow label="Name" value={attendee!.full_name} />
           <DetailRow label="Organisation" value={attendee!.organization} />
           <DetailRow label="Role" value={attendee!.role ?? "—"} />
@@ -226,11 +233,11 @@ export default function PassPage() {
       {/* ── DOWNLOAD BUTTON ── */}
       <button
         onClick={downloadQR}
-        className="w-full flex items-center justify-center gap-2 bg-[#162E55] text-white font-medium rounded-2xl py-3 text-sm shadow-[0_6px_16px_rgba(22,46,85,0.25)] hover:bg-[#0f2140] transition-colors mb-3"
+        className="mt-4 w-full flex items-center justify-center gap-2.5 rounded-2xl bg-linear-to-br from-[#1c3560] via-[#162E55] to-[#101f3d] py-4 text-[15px] font-semibold text-white shadow-[0_8px_20px_rgba(22,46,85,0.3)] transition-opacity hover:opacity-95"
       >
         <svg
-          width="16"
-          height="16"
+          width="18"
+          height="18"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -246,14 +253,14 @@ export default function PassPage() {
       </button>
 
       {/* ── REGISTER ANOTHER ── */}
-      <p className="text-center text-xs text-slate-400">
+      <p className="mt-5 text-center text-sm text-slate-500">
         <a
           href="/register"
-          className="inline-flex items-center gap-1.5 hover:text-[#162E55] transition-colors"
+          className="inline-flex items-center gap-2 hover:text-[#162E55] transition-colors"
         >
           <svg
-            width="12"
-            height="12"
+            width="14"
+            height="14"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
@@ -273,9 +280,9 @@ export default function PassPage() {
 
 function DetailRow({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between py-2.5 text-sm">
+    <div className="flex justify-between py-3 text-sm">
       <dt className="text-slate-500">{label}</dt>
-      <dd className="font-semibold text-slate-800 text-right max-w-[60%]">
+      <dd className="font-semibold text-slate-900 text-right max-w-[60%]">
         {value}
       </dd>
     </div>
