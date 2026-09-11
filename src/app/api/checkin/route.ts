@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     // 3. Look up the attendee by their QR token
     const { data: attendee, error: attendeeError } = await adminSupabase
       .from('attendees')
-      .select('id, full_name, organization')
+      .select('id, full_name, organization, role')
       .eq('qr_token', qr_token)
       .single()
 
@@ -73,6 +73,7 @@ export async function POST(request: NextRequest) {
             error: 'Already checked in today.',
             full_name: attendee.full_name,
             organization: attendee.organization,
+            role: attendee.role,
           },
           { status: 409 }
         )
@@ -89,6 +90,7 @@ export async function POST(request: NextRequest) {
         success: true,
         full_name: attendee.full_name,
         organization: attendee.organization,
+        role: attendee.role,
       },
       { status: 201 }
     )

@@ -14,7 +14,7 @@ const STATS = [
 
 export default function RegisterPage() {
   return (
-    <div className="mx-auto w-full max-w-120 px-5 pt-5 pb-12 lg:px-6 lg:py-10">
+    <div className="mx-auto w-full max-w-152 px-5 pt-5 pb-12 lg:px-0 lg:py-10">
       {/* ── EVENT HERO ── */}
       <section className="relative overflow-hidden rounded-3xl bg-linear-to-br from-[#1c3560] via-[#162E55] to-[#101f3d] px-7 py-8 text-white shadow-[0_12px_32px_rgba(22,46,85,0.28)]">
         {/* Soft sheen highlights, as per the design */}
@@ -55,7 +55,7 @@ export default function RegisterPage() {
       </div>
 
       {/* ── FORM CARD ── */}
-      <div className="mt-4 rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white p-5 shadow-[0_4px_16px_rgba(28,46,90,0.07),0_1px_3px_rgba(28,46,90,0.05)]">
+      <div className="mt-4 w-full rounded-3xl border border-[#1C2E5A1A] bg-white p-5 shadow-[0_4px_16px_#1C2E5A12,0_1px_3px_#1C2E5A0D]">
         <h2 className="text-xl font-semibold text-slate-900">
           Registration Form
         </h2>

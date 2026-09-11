@@ -43,13 +43,14 @@ export default function PublicSidebar() {
       <div className="mt-auto pt-6 flex items-center gap-2">
         <div className="w-6 h-6 rounded-full border border-slate-200 bg-slate-100 flex items-center justify-center text-slate-400 shrink-0">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-            <circle cx="12" cy="7" r="4" />
+            <circle cx="12" cy="12" r="10" />
+            <line x1="2" y1="12" x2="22" y2="12" />
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
           </svg>
         </div>
         <div>
           <p className="text-xs font-medium text-slate-700 leading-tight">Harare, Zimbabwe</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">© March 2026</p>
+          <p className="text-[10px] text-slate-400 mt-0.5">9–11 March 2026</p>
         </div>
       </div>
     </aside>

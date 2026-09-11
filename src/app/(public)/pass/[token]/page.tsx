@@ -139,17 +139,6 @@ export default function PassPage() {
   /* ── SUCCESS ── */
   return (
     <div className="max-w-120 mx-auto px-6 py-10">
-      {/* Mobile logo */}
-      <div className="flex justify-center mb-6 lg:hidden">
-        <img
-          src="/logo.svg"
-          alt="OAK Foundation"
-          width={85}
-          height={53}
-          className="object-contain"
-        />
-      </div>
-
       {/* ── SUCCESS BANNER ── */}
       <div className="relative overflow-hidden rounded-3xl bg-[#162E55] text-white px-5 py-4 flex items-start gap-4 mb-3 shadow-[0_4px_16px_rgba(22,46,85,0.18)]">
         {/* Soft radial highlight, as per the design */}
@@ -157,10 +146,10 @@ export default function PassPage() {
           aria-hidden
           className="pointer-events-none absolute -right-8 -top-12 w-36 h-36 rounded-full bg-[#5b7cae]/60 blur-2xl"
         />
-        <div className="shrink-0 mt-0.5 w-9 h-9 rounded-full bg-white/15 border border-white/25 flex items-center justify-center relative">
+        <div className="shrink-0 w-11 h-11 rounded-2xl bg-white/15 flex items-center justify-center relative">
           <svg
-            width="16"
-            height="16"
+            width="18"
+            height="18"
             viewBox="0 0 24 24"
             fill="none"
             stroke="white"
@@ -175,7 +164,7 @@ export default function PassPage() {
           <p className="text-[10px] font-semibold tracking-widest uppercase text-white/60 mb-1">
             Registration Complete
           </p>
-          <p className="text-xl font-bold leading-snug">
+          <p className="text-2xl font-bold leading-tight font-display">
             You&apos;re Registered,
             <br />
             {firstName}!
@@ -206,9 +195,13 @@ export default function PassPage() {
           </div>
         </div>
 
-        <p className="text-center font-mono text-[11px] text-slate-400 tracking-wider mb-1">
-          URL DATA:{" "}
-          {attendee!.qr_token.replace(/-/g, "").slice(0, 8).toUpperCase()}
+        <p className="text-center font-mono text-[11px] text-slate-400 tracking-[0.18em] mb-1">
+          OAK-2026-
+          {attendee!.qr_token.replace(/-/g, "").slice(0, 4).toUpperCase() ||
+            "••••"}
+          -
+          {attendee!.qr_token.replace(/-/g, "").slice(4, 8).toUpperCase() ||
+            "••••"}
         </p>
         <p className="text-center text-xs text-slate-400">
           Present at event entrance for check-in
@@ -225,7 +218,7 @@ export default function PassPage() {
           <DetailRow label="Organisation" value={attendee!.organization} />
           <DetailRow label="Role" value={attendee!.role ?? "—"} />
           <DetailRow label="Email" value={attendee!.email ?? "—"} />
-          <DetailRow label="Event Dates" value="9-11 March 2026" />
+          <DetailRow label="Event Dates" value="9–11 March 2026" />
           <DetailRow label="Location" value="Harare, Zimbabwe" />
         </dl>
       </div>
@@ -268,8 +261,8 @@ export default function PassPage() {
             strokeLinecap="round"
             strokeLinejoin="round"
           >
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
           </svg>
           Register another attendee
         </a>

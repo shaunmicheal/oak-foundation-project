@@ -51,8 +51,9 @@ export function isRegisterFlow(pathname: string): boolean {
 
 export function isNavItemActive(pathname: string, href: string): boolean {
   if (href === "/register") {
-    // The pass page is the final step of the registration flow
-    return isRegisterFlow(pathname);
+    // /pass/[token] is the final step of the registration flow — per the
+    // design the Register item stays highlighted on the success screen.
+    return pathname.startsWith("/register") || pathname.startsWith("/pass");
   }
   return pathname.startsWith(href);
 }

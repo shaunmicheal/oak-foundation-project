@@ -253,7 +253,7 @@ export default function RegistrationForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-2xl bg-linear-to-b from-[#24457f] to-[#162E55] py-4 text-base font-semibold text-white shadow-[0_8px_20px_rgba(22,46,85,0.3)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-3xl bg-[#162E55] py-4 font-display text-base font-bold tracking-wide text-white shadow-[0_10px_24px_rgba(22,46,85,0.22)] transition hover:bg-[#1d3a6b] disabled:cursor-not-allowed disabled:opacity-60"
       >
         {isSubmitting ? "Registering…" : "Register"}
       </button>
