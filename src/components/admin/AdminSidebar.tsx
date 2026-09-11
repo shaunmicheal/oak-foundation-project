@@ -94,6 +94,8 @@ export default function AdminSidebar() {
   const router = useRouter();
 
   async function handleSignOut() {
+    // Clear the short-lived gate, then the Supabase session itself
+    await fetch("/api/admin/session", { method: "DELETE" }).catch(() => {});
     const supabase = createClient();
     await supabase.auth.signOut();
     router.push("/admin/login");

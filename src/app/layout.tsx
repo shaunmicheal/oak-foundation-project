@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import BfcacheReload from "@/components/BfcacheReload";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -29,14 +30,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Chillax display font (Fontshare) â€” used for headings/brand text */}
+        {/* Chillax display font (Fontshare) — used for headings/brand text */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="" />
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=chillax@300,400,500,600,700&display=swap"
         />
       </head>
-      <body suppressHydrationWarning className="min-h-full flex flex-col"><ServiceWorkerRegister />{children}</body>
+      <body suppressHydrationWarning className="min-h-full flex flex-col"><ServiceWorkerRegister /><BfcacheReload />{children}</body>
     </html>
   );
 }

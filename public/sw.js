@@ -1,5 +1,5 @@
 /* Minimal offline-first service worker for the OAK PWA */
-const CACHE = "oak-pwa-v1";
+const CACHE = "oak-pwa-v2";
 const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {

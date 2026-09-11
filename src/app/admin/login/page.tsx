@@ -28,7 +28,22 @@ export default function AdminLoginPage() {
       return;
     }
 
-    router.push("/admin/dashboard");
+    // Mint the short-lived admin gate. The server verifies this account is
+    // actually in the `admins` table — anyone else is signed straight back out.
+    const session = await fetch("/api/admin/session", { method: "POST" });
+
+    if (!session.ok) {
+      await supabase.auth.signOut();
+      setError("This account does not have admin access.");
+      setLoading(false);
+      return;
+    }
+
+    // Return to the admin page the user originally asked for, if any
+    const next = new URLSearchParams(window.location.search).get("next");
+    router.push(
+      next && next.startsWith("/admin/") ? next : "/admin/dashboard",
+    );
     router.refresh();
   }
 
