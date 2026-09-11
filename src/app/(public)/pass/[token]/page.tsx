@@ -40,6 +40,12 @@ export default function PassPage() {
         }
         const data = await res.json();
         setAttendee(data);
+        // This browser has a completed registration — reveal sidebar pages too
+        try {
+          localStorage.setItem("oak_registered", "1");
+        } catch {
+          /* ignore */
+        }
         setState("success");
       })
       .catch(() => setState("error"));

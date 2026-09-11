@@ -11,8 +11,8 @@ import { useRouter } from "next/navigation";
 
 const ROLE_OPTIONS = [
   "Partner",
-  "Own Staff",
-  "Coordinator Team",
+  "OAK Staff",
+  "Coordination Team",
   "Presenter",
   "Observer",
 ];
@@ -104,6 +104,14 @@ export default function RegistrationForm() {
         return;
       }
 
+      // Mark this browser as registered so the sidebar reveals the other pages
+      try {
+        localStorage.setItem("oak_registered", "1");
+        window.dispatchEvent(new Event("oak:registered"));
+      } catch {
+        /* storage unavailable — sidebar gating degrades gracefully */
+      }
+
       router.push(`/pass/${data.qr_token}`);
     } catch {
       setSubmitError(
@@ -146,7 +154,7 @@ export default function RegistrationForm() {
         />
       </Field>
 
-      <Field label="Sub Partner / Programme Area">
+      <Field label="Sub-Partner / Programme Area">
         <input
           type="text"
           value={form.subPartner}
@@ -267,7 +275,7 @@ export default function RegistrationForm() {
 
 function inputClass(hasError: boolean) {
   return [
-    "w-full rounded-lg border bg-white px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400",
+    "w-full rounded-lg border bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400",
     "focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55]",
     hasError ? "border-red-400" : "border-slate-200",
   ].join(" ");
@@ -340,7 +348,7 @@ function RoleSelect({
           }
         }}
         className={[
-          "w-full rounded-lg border bg-white px-3 py-2 text-sm flex items-center justify-between gap-2 text-left",
+          "w-full rounded-lg border bg-slate-50 px-3 py-2 text-sm flex items-center justify-between gap-2 text-left",
           "focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55]",
           hasError ? "border-red-400" : "border-slate-200",
         ].join(" ")}
@@ -378,28 +386,15 @@ function RoleSelect({
                   onClick={() => commit(i)}
                   onMouseEnter={() => setHighlight(i)}
                   className={[
-                    "w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left transition-colors",
+                    "w-full flex items-center px-3 py-2 text-sm text-left transition-colors",
                     active
-                      ? "bg-[#162E55]/5 text-[#162E55] font-medium"
-                      : "text-slate-700",
+                      ? "bg-[#162E55] text-white"
+                      : selected
+                        ? "font-semibold text-[#162E55]"
+                        : "text-slate-700",
                   ].join(" ")}
                 >
                   {role}
-                  {selected && (
-                    <svg
-                      width="14"
-                      height="14"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="shrink-0 text-[#162E55]"
-                    >
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  )}
                 </button>
               </li>
             );

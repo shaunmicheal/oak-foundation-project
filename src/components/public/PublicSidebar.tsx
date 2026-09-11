@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 
 function RegisterIcon() {
@@ -34,14 +35,48 @@ function PartnersIcon() {
   );
 }
 
-const NAV_ITEMS = [
-  { label: "Register", href: "/register", icon: <RegisterIcon /> },
-  { label: "Programmes", href: "/programme", icon: <ProgrammesIcon /> },
-  { label: "Partners", href: "/partners", icon: <PartnersIcon /> },
-];
+const REGISTER_ITEM = {
+  label: "Register",
+  href: "/register",
+  icon: <RegisterIcon />,
+};
+
+const PROGRAMMES_ITEM = {
+  label: "Programmes",
+  href: "/programme",
+  icon: <ProgrammesIcon />,
+};
+
+const PARTNERS_ITEM = {
+  label: "Partners",
+  href: "/partners",
+  icon: <PartnersIcon />,
+};
 
 export default function PublicSidebar() {
   const pathname = usePathname();
+
+  // Programmes & Partners only appear once this browser has a completed
+  // registration — the flag is written by the registration form on success
+  // (and by the pass page when loading a valid pass link).
+  const [isRegistered, setIsRegistered] = useState(false);
+
+  useEffect(() => {
+    const sync = () => {
+      try {
+        setIsRegistered(!!localStorage.getItem("oak_registered"));
+      } catch {
+        setIsRegistered(false);
+      }
+    };
+    sync();
+    window.addEventListener("storage", sync);
+    window.addEventListener("oak:registered", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("oak:registered", sync);
+    };
+  }, []);
 
   function isActive(href: string) {
     if (href === "/register") {
@@ -50,6 +85,11 @@ export default function PublicSidebar() {
     }
     return pathname.startsWith(href);
   }
+
+  const NAV_ITEMS = [
+    REGISTER_ITEM,
+    ...(isRegistered ? [PROGRAMMES_ITEM, PARTNERS_ITEM] : []),
+  ];
 
   return (
     <aside className="hidden lg:flex lg:flex-col w-56 shrink-0 border-r border-slate-200 bg-white px-5 py-6">
@@ -65,7 +105,7 @@ export default function PublicSidebar() {
             href={item.href}
             aria-current={isActive(item.href) ? "page" : undefined}
             className={[
-              "flex items-center gap-2 rounded-lg text-sm font-medium px-3 py-2 transition-colors",
+              "flex items-center gap-2.5 rounded-xl text-sm font-medium px-3.5 py-3 transition-colors",
               isActive(item.href)
                 ? "bg-[#162E55] text-white"
                 : "text-slate-600 hover:bg-slate-100",

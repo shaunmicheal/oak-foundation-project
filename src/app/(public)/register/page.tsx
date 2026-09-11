@@ -2,8 +2,8 @@ import RegistrationForm from '@/components/registration/RegistrationForm'
 
 const EVENT_DETAILS = {
   title: 'Partner Convening 2026',
-  location: 'Geneva',
-  dates: '9–11 March 2026',
+  location: 'Harare',
+  dates: '9-11 Nov 2026',
 }
 
 const STATS = [
