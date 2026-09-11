@@ -1,4 +1,5 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +18,10 @@ export const metadata: Metadata = {
   description: "Registration, passes, programme, and partner directory for the OAK Partner Convening 2026.",
 };
 
+export const viewport: Viewport = {
+  themeColor: "#162E55",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
@@ -31,7 +36,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           href="https://api.fontshare.com/v2/css?f[]=chillax@300,400,500,600,700&display=swap"
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><ServiceWorkerRegister />{children}</body>
     </html>
   );
 }

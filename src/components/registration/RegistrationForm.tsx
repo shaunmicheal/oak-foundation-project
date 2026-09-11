@@ -104,18 +104,11 @@ export default function RegistrationForm() {
         return;
       }
 
-      // Mark this browser as registered so the sidebar reveals the other pages
-      try {
-        localStorage.setItem("oak_registered", "1");
-        window.dispatchEvent(new Event("oak:registered"));
-      } catch {
-        /* storage unavailable — sidebar gating degrades gracefully */
-      }
 
       router.push(`/pass/${data.qr_token}`);
     } catch {
       setSubmitError(
-        "Network error — please check your connection and try again.",
+        "Network error â€” please check your connection and try again.",
       );
       setIsSubmitting(false);
     }
@@ -262,7 +255,7 @@ export default function RegistrationForm() {
         disabled={isSubmitting}
         className="w-full bg-[#162E55] text-white font-medium rounded-xl py-3 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#0f2140] transition-colors"
       >
-        {isSubmitting ? "Registering…" : "Register"}
+        {isSubmitting ? "Registeringâ€¦" : "Register"}
       </button>
 
       <p className="text-[11px] text-center text-slate-400 pt-1">
@@ -281,7 +274,7 @@ function inputClass(hasError: boolean) {
   ].join(" ");
 }
 
-/** Custom dropdown for Role / Capacity — styled to match the text inputs. */
+/** Custom dropdown for Role / Capacity â€” styled to match the text inputs. */
 function RoleSelect({
   value,
   hasError,

@@ -1,95 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-
-function RegisterIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
-      <circle cx="10" cy="7" r="4" />
-      <line x1="19" y1="8" x2="19" y2="14" />
-      <line x1="22" y1="11" x2="16" y2="11" />
-    </svg>
-  );
-}
-
-function ProgrammesIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="7" height="7" rx="1" />
-      <rect x="14" y="3" width="7" height="7" rx="1" />
-      <rect x="3" y="14" width="7" height="7" rx="1" />
-      <rect x="14" y="14" width="7" height="7" rx="1" />
-    </svg>
-  );
-}
-
-function PartnersIcon() {
-  return (
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="2" y="7" width="20" height="14" rx="2" />
-      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
-    </svg>
-  );
-}
-
-const REGISTER_ITEM = {
-  label: "Register",
-  href: "/register",
-  icon: <RegisterIcon />,
-};
-
-const PROGRAMMES_ITEM = {
-  label: "Programmes",
-  href: "/programme",
-  icon: <ProgrammesIcon />,
-};
-
-const PARTNERS_ITEM = {
-  label: "Partners",
-  href: "/partners",
-  icon: <PartnersIcon />,
-};
+import { NAV_ITEMS, isNavItemActive } from "./navItems";
 
 export default function PublicSidebar() {
   const pathname = usePathname();
 
-  // Programmes & Partners only appear once this browser has a completed
-  // registration — the flag is written by the registration form on success
-  // (and by the pass page when loading a valid pass link).
-  const [isRegistered, setIsRegistered] = useState(false);
-
-  useEffect(() => {
-    const sync = () => {
-      try {
-        setIsRegistered(!!localStorage.getItem("oak_registered"));
-      } catch {
-        setIsRegistered(false);
-      }
-    };
-    sync();
-    window.addEventListener("storage", sync);
-    window.addEventListener("oak:registered", sync);
-    return () => {
-      window.removeEventListener("storage", sync);
-      window.removeEventListener("oak:registered", sync);
-    };
-  }, []);
-
-  function isActive(href: string) {
-    if (href === "/register") {
-      // The pass page is the final step of the registration flow
-      return pathname.startsWith("/register") || pathname.startsWith("/pass");
-    }
-    return pathname.startsWith(href);
-  }
-
-  const NAV_ITEMS = [
-    REGISTER_ITEM,
-    ...(isRegistered ? [PROGRAMMES_ITEM, PARTNERS_ITEM] : []),
-  ];
+  const isActive = (href: string) => isNavItemActive(pathname, href);
 
   return (
     <aside className="hidden lg:flex lg:flex-col w-56 shrink-0 border-r border-slate-200 bg-white px-5 py-6">
