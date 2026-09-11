@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import PublicMobileHeader from "@/components/public/PublicMobileHeader";
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
@@ -48,8 +49,11 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm">
+    <div className="min-h-screen bg-slate-50 flex flex-col">
+      {/* Mobile top header — blue bar with logo + event name (lg:hidden) */}
+      <PublicMobileHeader />
+      <div className="flex flex-1 flex-col items-center justify-center px-4 py-10">
+        <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <img
@@ -117,12 +121,13 @@ export default function AdminLoginPage() {
           </form>
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-6">
-          Attendee?{" "}
-          <a href="/register" className="text-[#162E55] hover:underline">
-            Register here
-          </a>
-        </p>
+          <p className="text-center text-xs text-slate-400 mt-6">
+            Attendee?{" "}
+            <a href="/register" className="text-[#162E55] hover:underline">
+              Register here
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
