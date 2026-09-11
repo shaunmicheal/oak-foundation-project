@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS, isNavItemActive } from "./navItems";
+import { NAV_ITEMS, isNavItemActive, isRegisterFlow } from "./navItems";
 
 export default function PublicSidebar() {
   const pathname = usePathname();
 
   const isActive = (href: string) => isNavItemActive(pathname, href);
+
+  // Per the design: inside the registration flow the sidebar shows only Register
+  const items = isRegisterFlow(pathname)
+    ? NAV_ITEMS.filter((item) => item.href === "/register")
+    : NAV_ITEMS;
 
   return (
     <aside className="hidden lg:flex lg:flex-col w-56 shrink-0 border-r border-slate-200 bg-white px-5 py-6">
@@ -17,7 +22,7 @@ export default function PublicSidebar() {
       </p>
 
       <nav className="space-y-2">
-        {NAV_ITEMS.map((item) => (
+        {items.map((item) => (
           <Link
             key={item.href}
             href={item.href}

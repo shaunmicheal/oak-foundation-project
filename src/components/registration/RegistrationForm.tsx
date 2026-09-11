@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   useEffect,
@@ -108,7 +108,7 @@ export default function RegistrationForm() {
       router.push(`/pass/${data.qr_token}`);
     } catch {
       setSubmitError(
-        "Network error â€” please check your connection and try again.",
+        "Network error — please check your connection and try again.",
       );
       setIsSubmitting(false);
     }
@@ -185,7 +185,7 @@ export default function RegistrationForm() {
         />
       </Field>
 
-      <div className="pt-2">
+      <div className="rounded-2xl border border-[rgba(28,46,90,0.06)] bg-[#f4f6fb] p-4">
         <p className="text-xs font-semibold tracking-wide text-slate-500 uppercase mb-3">
           Requirements
         </p>
@@ -196,7 +196,7 @@ export default function RegistrationForm() {
               value={form.dietaryNeeds}
               onChange={(e) => updateField("dietaryNeeds", e.target.value)}
               placeholder="e.g., Vegetarian, Halal, Gluten-free"
-              className={inputClass(false)}
+              className={inputClass(false, "white")}
             />
           </Field>
           <Field label="Accessibility Requirements">
@@ -207,7 +207,7 @@ export default function RegistrationForm() {
                 updateField("accessibilityNeeds", e.target.value)
               }
               placeholder="e.g., Wheelchair access, hearing loop"
-              className={inputClass(false)}
+              className={inputClass(false, "white")}
             />
           </Field>
           <Field label="Travel & Accommodation">
@@ -216,19 +216,19 @@ export default function RegistrationForm() {
               value={form.travelNeeds}
               onChange={(e) => updateField("travelNeeds", e.target.value)}
               placeholder="e.g., Flight from London, hotel needed"
-              className={inputClass(false)}
+              className={inputClass(false, "white")}
             />
           </Field>
         </div>
       </div>
 
-      <div className="pt-2">
-        <label className="flex items-start gap-2 text-xs text-slate-600">
+      <div className="rounded-2xl border border-slate-200 p-4">
+        <label className="flex items-start gap-3 text-sm leading-relaxed text-slate-700">
           <input
             type="checkbox"
             checked={form.consentGiven}
             onChange={(e) => updateField("consentGiven", e.target.checked)}
-            className="mt-0.5"
+            className="mt-1 h-5 w-5 shrink-0 rounded-md accent-[#162E55]"
           />
           <span>
             I agree to OAK Foundation&apos;s{" "}
@@ -253,28 +253,25 @@ export default function RegistrationForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full bg-[#162E55] text-white font-medium rounded-xl py-3 disabled:opacity-60 disabled:cursor-not-allowed hover:bg-[#0f2140] transition-colors"
+        className="w-full rounded-2xl bg-linear-to-b from-[#24457f] to-[#162E55] py-4 text-base font-semibold text-white shadow-[0_8px_20px_rgba(22,46,85,0.3)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {isSubmitting ? "Registeringâ€¦" : "Register"}
+        {isSubmitting ? "Registering…" : "Register"}
       </button>
 
-      <p className="text-[11px] text-center text-slate-400 pt-1">
-        Your data is secured and handled by OAK Foundation in accordance with
-        GDPR.
-      </p>
     </form>
   );
 }
 
-function inputClass(hasError: boolean) {
+function inputClass(hasError: boolean, variant: "tinted" | "white" = "tinted") {
   return [
-    "w-full rounded-lg border bg-slate-50 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400",
-    "focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55]",
-    hasError ? "border-red-400" : "border-slate-200",
+    "w-full rounded-xl border px-4 py-3.5 text-base text-slate-900",
+    variant === "white" ? "bg-white" : "bg-[#eef2f8]",
+    "placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#162E55]/25 focus:border-[#162E55] focus:bg-white",
+    hasError ? "border-red-400" : "border-transparent",
   ].join(" ");
 }
 
-/** Custom dropdown for Role / Capacity â€” styled to match the text inputs. */
+/** Custom dropdown for Role / Capacity — styled to match the text inputs. */
 function RoleSelect({
   value,
   hasError,
@@ -341,9 +338,9 @@ function RoleSelect({
           }
         }}
         className={[
-          "w-full rounded-lg border bg-slate-50 px-3 py-2 text-sm flex items-center justify-between gap-2 text-left",
-          "focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55]",
-          hasError ? "border-red-400" : "border-slate-200",
+          "w-full rounded-xl border bg-[#eef2f8] px-4 py-3.5 text-base flex items-center justify-between gap-2 text-left",
+          "focus:outline-none focus:ring-2 focus:ring-[#162E55]/25 focus:border-[#162E55]",
+          hasError ? "border-red-400" : "border-transparent",
         ].join(" ")}
       >
         <span className={value ? "text-slate-900" : "text-slate-400"}>
@@ -411,7 +408,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-[10px] font-semibold tracking-wider text-slate-500 uppercase mb-1">
+      <label className="block text-[11px] font-semibold tracking-wider text-slate-500 uppercase mb-1.5">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       {children}

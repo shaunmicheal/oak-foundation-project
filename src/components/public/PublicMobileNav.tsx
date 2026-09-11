@@ -2,10 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV_ITEMS, isNavItemActive } from "./navItems";
+import { NAV_ITEMS, isNavItemActive, isRegisterFlow } from "./navItems";
 
 export default function PublicMobileNav() {
   const pathname = usePathname();
+
+  // Registration gate: the register page has no navigation at all (per design).
+  if (isRegisterFlow(pathname)) return null;
 
   return (
     <nav

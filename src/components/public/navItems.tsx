@@ -43,10 +43,16 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Partners", href: "/partners", icon: <PartnersIcon /> },
 ];
 
+/** True while the user is inside the registration gate (register only).
+ *  Pass page counts as "already registered" — full navigation is available there. */
+export function isRegisterFlow(pathname: string): boolean {
+  return pathname.startsWith("/register");
+}
+
 export function isNavItemActive(pathname: string, href: string): boolean {
   if (href === "/register") {
     // The pass page is the final step of the registration flow
-    return pathname.startsWith("/register") || pathname.startsWith("/pass");
+    return isRegisterFlow(pathname);
   }
   return pathname.startsWith(href);
 }
