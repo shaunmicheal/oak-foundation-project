@@ -24,19 +24,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
+    <html suppressHydrationWarning
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        {/* Chillax display font (Fontshare) — used for headings/brand text */}
+        {/* Chillax display font (Fontshare) â€” used for headings/brand text */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="" />
         <link
           rel="stylesheet"
           href="https://api.fontshare.com/v2/css?f[]=chillax@300,400,500,600,700&display=swap"
         />
       </head>
-      <body className="min-h-full flex flex-col"><ServiceWorkerRegister />{children}</body>
+      <body suppressHydrationWarning className="min-h-full flex flex-col"><ServiceWorkerRegister />{children}</body>
     </html>
   );
 }
