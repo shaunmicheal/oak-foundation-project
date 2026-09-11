@@ -93,8 +93,8 @@ export default function PublicSidebar() {
 
   return (
     <aside className="hidden lg:flex lg:flex-col w-56 shrink-0 border-r border-slate-200 bg-white px-5 py-6">
-      <img src="/logo.svg" alt="OAK Foundation" width={85} height={53} className="w-[85px] object-contain mb-1" />
-      <p className="text-[10px] font-semibold tracking-wide text-slate-500 uppercase mb-6">
+      <img src="/logo.svg" alt="OAK Foundation" width={85} height={53} className="w-21.25 object-contain mb-1" />
+      <p className="font-display text-[10px] font-semibold tracking-wide text-slate-500 uppercase mb-6">
         Partner Convening 2026
       </p>
 
