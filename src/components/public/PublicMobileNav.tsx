@@ -13,9 +13,9 @@ export default function PublicMobileNav() {
   return (
     <nav
       aria-label="Main"
-      className="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white/95 backdrop-blur lg:hidden"
     >
-      <div className="grid grid-cols-3">
+      <div className="grid grid-cols-3 px-3 pt-2">
         {NAV_ITEMS.map((item) => {
           const active = isNavItemActive(pathname, item.href);
           return (
@@ -24,7 +24,7 @@ export default function PublicMobileNav() {
               href={item.href}
               aria-current={active ? "page" : undefined}
               className={[
-                "flex flex-col items-center justify-center gap-1 py-2.5 text-[11px] font-medium transition-colors",
+                "flex flex-col items-center justify-center gap-1 rounded-3xl px-2 py-2.5 text-[12px] font-medium transition-colors",
                 active ? "text-[#162E55]" : "text-slate-500 hover:text-slate-700",
               ].join(" ")}
             >

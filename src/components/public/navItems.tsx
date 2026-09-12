@@ -39,7 +39,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { label: "Register", href: "/register", icon: <RegisterIcon /> },
-  { label: "Programmes", href: "/programme", icon: <ProgrammesIcon /> },
+  { label: "Programme", href: "/programme", icon: <ProgrammesIcon /> },
   { label: "Partners", href: "/partners", icon: <PartnersIcon /> },
 ];
 

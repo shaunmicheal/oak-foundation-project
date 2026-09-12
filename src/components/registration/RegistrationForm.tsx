@@ -104,6 +104,10 @@ export default function RegistrationForm() {
         return;
       }
 
+      if (form.role === "OAK Staff") {
+        router.push("/admin/dashboard");
+        return;
+      }
 
       router.push(`/pass/${data.qr_token}`);
     } catch {

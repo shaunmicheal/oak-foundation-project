@@ -22,6 +22,8 @@ type DocPost = {
   notes: string | null;
   photo_urls: string[] | null;
   created_at: string;
+  author_name?: string | null;
+  author_organization?: string | null;
 };
 
 const EVENT_DAYS = [
@@ -113,7 +115,7 @@ function CategoryPill({
   const s = CATEGORY_STYLES[category] ?? CATEGORY_STYLES.Plenary;
   return (
     <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${s.pill} ${s.text}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[13px] font-semibold ${s.pill} ${s.text}`}
     >
       <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
       {category}
@@ -127,14 +129,14 @@ function SessionCard({ session }: { session: Session }) {
   const hasDetails = Boolean(session.description);
 
   return (
-    <div className={`rounded-2xl ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW}`}>
+    <div className={`rounded-[30px] ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW}`}>
       <button
         type="button"
         onClick={() => hasDetails && setOpen((o) => !o)}
         className="flex w-full items-start gap-4 text-left"
       >
         <div className="w-[52px] shrink-0 text-left">
-          <p className="text-sm font-bold text-slate-900 whitespace-nowrap leading-5">
+          <p className="whitespace-nowrap text-[16px] font-bold leading-5 text-[#101b31]">
             {formatTime(session.start_time)}
           </p>
           {session.end_time && (
@@ -145,7 +147,7 @@ function SessionCard({ session }: { session: Session }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
-            <p className="text-[15px] font-bold text-slate-900 leading-snug">
+            <p className="text-[18px] font-bold leading-snug text-[#101b31]">
               {session.title}
             </p>
             {session.category && (
@@ -155,10 +157,10 @@ function SessionCard({ session }: { session: Session }) {
             )}
           </div>
           {session.speaker && (
-            <p className="text-sm text-slate-500 mt-1.5">{session.speaker}</p>
+            <p className="mt-2 text-[16px] text-[#8793ad]">{session.speaker}</p>
           )}
           {session.location && (
-            <p className="flex items-center gap-1.5 text-sm text-slate-400 mt-1">
+            <p className="mt-2 flex items-center gap-1.5 text-[16px] text-[#8793ad]">
               <PinIcon />
               {session.location}
             </p>
@@ -176,12 +178,12 @@ function SessionCard({ session }: { session: Session }) {
 
 function BreakRow({ session }: { session: Session }) {
   return (
-    <div className="flex items-center gap-4 py-1.5">
-      <span className="w-[52px] shrink-0 text-sm font-medium text-slate-500">
+    <div className="flex items-center gap-4 py-2">
+      <span className="w-[52px] shrink-0 text-[16px] font-medium text-[#8793ad]">
         {formatTime(session.start_time)}
       </span>
       <span aria-hidden className="h-px flex-1 bg-slate-200" />
-      <span className="text-sm text-slate-500 text-center px-2">
+      <span className="px-2 text-center text-[16px] text-[#8793ad]">
         {session.title}
       </span>
       <span aria-hidden className="h-px flex-1 bg-slate-200" />
@@ -226,37 +228,47 @@ export default function ProgrammePage() {
   const rest = daySessions.filter((s) => s !== featured);
 
   return (
-    <div className="max-w-[608px] mx-auto w-full lg:px-0 px-5 py-8 lg:py-10">
+    <div className="mx-auto w-full max-w-[704px] px-[15px] pb-28 pt-[28px] lg:max-w-[608px] lg:px-0 lg:py-10">
       {/* ── Heading ── */}
       <div className="mb-5">
-        <h1 className="font-display text-3xl lg:text-[32px] font-bold text-[#162E55] tracking-tight">
+        <h1 className="font-display text-[24px] font-bold leading-none tracking-tight text-[#101b31] lg:text-[32px]">
           Programme
         </h1>
-        <p className="text-[15px] text-slate-500 mt-1">
+        <p className="mt-2 text-[14px] text-[#8793ad] lg:mt-3 lg:text-[20px]">
           OAK Partner Convening 2026
         </p>
       </div>
 
       {/* ── Schedule / Docs toggle ── */}
-      <div className="flex bg-slate-100 rounded-2xl p-1 mb-5">
+      <div className="mb-5 flex h-[38px] rounded-[9px] bg-[#e5e9f1] p-1 lg:mb-7 lg:h-14">
         {(["schedule", "docs"] as const).map((v) => (
           <button
             key={v}
             onClick={() => setView(v)}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl capitalize transition-all ${
+            className={`flex-1 rounded-[12px] py-1 text-[12px] font-semibold capitalize transition-all lg:rounded-[16px] lg:py-2.5 lg:text-[16px] ${
               view === v
                 ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(28,46,90,0.12)]"
                 : "text-slate-500 hover:text-slate-700"
             }`}
           >
-            {v}
+            {v === "schedule" ? "Schedule" : "Docs"}
           </button>
         ))}
       </div>
 
       {view === "docs" ? (
         /* ── Docs view ── */
-        <div className="space-y-3">
+        <div>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 font-display text-[16px] font-bold text-[#101b31] lg:text-xl">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#193562]"><path d="M15 5h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4" /><path d="M9 3h6v4H9z" /><path d="M8 12h8M8 16h5" /></svg>
+              Session Notes
+            </h2>
+            <button type="button" className="rounded-[11px] bg-[#193562] px-3 py-2 text-[10px] font-semibold text-white shadow-[0_5px_12px_rgba(25,53,98,0.22)] transition hover:bg-[#10284e] lg:px-4 lg:text-xs">
+              + Add Note
+            </button>
+          </div>
+          <div className="space-y-3">
           {docs.length === 0 && !loading && (
             <div
               className={`rounded-3xl ${CARD_BORDER} bg-white p-10 text-center ${CARD_SHADOW}`}
@@ -269,22 +281,32 @@ export default function ProgrammePage() {
               </p>
             </div>
           )}
-          {docs.map((d) => (
+          {docs.map((d) => {
+            const author = d.author_name ?? "OAK Foundation";
+            const organization = d.author_organization ?? "Partner Convening 2026";
+            const day = EVENT_DAYS.find((eventDay) => eventDay.date === d.event_day)?.day ?? d.event_day;
+            return (
             <div
               key={d.id}
-              className={`rounded-2xl ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW}`}
+              className={`rounded-[24px] ${CARD_BORDER} bg-white p-4 ${CARD_SHADOW} lg:p-5`}
             >
-              <p className="text-[10px] font-semibold tracking-widest uppercase text-slate-400 mb-1.5">
-                {EVENT_DAYS.find((e) => e.date === d.event_day)?.day ??
-                  d.event_day}
-              </p>
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-2.5">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#193562] text-[9px] font-bold text-white">{initials(author)}</span>
+                  <div className="min-w-0">
+                    <p className="truncate text-[11px] font-semibold text-[#101b31]">{author}</p>
+                    <p className="truncate text-[9px] text-[#8793ad]">{organization}</p>
+                  </div>
+                </div>
+                <span className="shrink-0 rounded-full bg-[#edf1f7] px-2 py-1 text-[9px] text-[#8793ad]">{day} · {noteTime(d.created_at)}</span>
+              </div>
               {d.notes && (
-                <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">
+                <p className="whitespace-pre-line text-[12px] leading-[1.55] text-[#26344d] lg:text-sm">
                   {d.notes}
                 </p>
               )}
               {d.photo_urls && d.photo_urls.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-3">
+                <div className="mt-3 flex flex-wrap gap-2">
                   {d.photo_urls.map((u) => (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -297,37 +319,39 @@ export default function ProgrammePage() {
                 </div>
               )}
             </div>
-          ))}
+            );
+          })}
+          </div>
         </div>
       ) : (
         <>
 
           {/* ── Day tabs ── */}
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="mb-7 grid grid-cols-3 gap-2.5 lg:mb-12 lg:gap-3">
             {EVENT_DAYS.map((d) => {
               const isActive = activeDay === d.date;
               return (
                 <button
                   key={d.date}
                   onClick={() => setActiveDay(d.date)}
-                  className={`rounded-2xl px-4 py-3.5 text-left transition-all ${
+                    className={`h-[80px] rounded-[25px] px-3.5 py-3 text-left transition-all lg:h-[118px] lg:rounded-[32px] lg:px-5 lg:py-5 ${
                     isActive
                       ? `bg-[#162E55] text-white ${CARD_SHADOW}`
                       : `${CARD_BORDER} bg-white text-slate-900 hover:bg-slate-50`
                   }`}
                 >
                   <p
-                    className={`text-[11px] font-semibold tracking-widest uppercase ${
+                    className={`text-[9px] font-semibold tracking-widest uppercase lg:text-[11px] ${
                       isActive ? "text-white/60" : "text-slate-400"
                     }`}
                   >
                     {d.weekday}
                   </p>
-                  <p className="font-display text-xl font-bold mt-0.5">
+                  <p className="mt-0.5 font-display text-[18px] font-bold leading-none lg:text-xl">
                     {d.day}
                   </p>
                   <p
-                    className={`text-xs mt-0.5 ${
+                    className={`mt-1 text-[11px] lg:text-xs ${
                       isActive ? "text-white/60" : "text-slate-400"
                     }`}
                   >
@@ -367,7 +391,7 @@ export default function ProgrammePage() {
           {/* ── Featured session ── */}
           {!loading && !error && featured && (
             <div
-              className={`relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1c3560] via-[#162E55] to-[#101f3d] text-white p-6 mb-4 ${CARD_SHADOW}`}
+              className={`relative mb-4 min-h-[179px] overflow-hidden rounded-[25px] bg-gradient-to-br from-[#13203a] via-[#162e55] to-[#203b6b] p-5 text-white ${CARD_SHADOW} lg:mb-5 lg:min-h-[266px] lg:rounded-[32px] lg:p-7`}
             >
               <div
                 aria-hidden
@@ -384,18 +408,18 @@ export default function ProgrammePage() {
                   >
                     <path d="M12 2l2.9 6.26 6.6.56-5 4.36 1.5 6.45L12 16.9 5.99 19.63l1.5-6.45-5-4.36 6.6-.56L12 2z" />
                   </svg>
-                  <p className="text-[11px] font-semibold tracking-[0.18em] uppercase text-white/70">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/65 lg:text-[13px]">
                     Featured
                   </p>
                   <span
                     aria-hidden
                     className="h-1 w-1 rounded-full bg-white/40"
                   />
-                  <p className="text-[11px] font-medium text-white/60">
+                  <p className="text-[9px] font-medium text-white/60 lg:text-[13px]">
                     {timeRange(featured.start_time, featured.end_time)}
                   </p>
                 </div>
-                <p className="font-display text-2xl lg:text-[28px] font-bold leading-tight">
+                <p className="mt-5 font-display text-[20px] font-bold leading-[1.3] lg:mt-7 lg:text-[28px] lg:leading-[1.35]">
                   {featured.title}
                 </p>
                 {featured.speaker && (
@@ -403,13 +427,13 @@ export default function ProgrammePage() {
                     <span className="h-8 w-8 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-xs font-bold shrink-0">
                       {featured.speaker.charAt(0)}
                     </span>
-                    <span className="text-[15px] text-white/85">
+                    <span className="text-[12px] text-white/65 lg:text-[18px]">
                       {featured.speaker}
                     </span>
                   </p>
                 )}
                 {featured.location && (
-                  <p className="flex items-center gap-1.5 text-sm text-white/60 mt-2">
+                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-white/60 lg:mt-4 lg:text-[16px]">
                     <PinIcon className="opacity-70" />
                     {featured.location}
                   </p>
@@ -420,15 +444,15 @@ export default function ProgrammePage() {
 
           {/* ── Category legend ── */}
           {!loading && !error && daySessions.some((s) => s.category) && (
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-2 mb-5 px-1">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-1 lg:mb-8 lg:gap-x-4">
               {CATEGORIES.map((c) => (
                 <span
                   key={c}
-                  className="flex items-center gap-1.5 text-xs font-medium text-slate-500"
+                    className="flex items-center gap-1.5 text-[10px] font-medium text-[#8793ad] lg:gap-2 lg:text-[14px]"
                 >
                   <span
                     aria-hidden
-                    className={`h-2 w-2 rounded-full ${CATEGORY_STYLES[c].dot}`}
+                    className={`h-2 w-2 rounded-full ${CATEGORY_STYLES[c].dot} lg:h-3 lg:w-3`}
                   />
                   {c}
                 </span>
@@ -438,7 +462,7 @@ export default function ProgrammePage() {
 
           {/* ── Timeline ── */}
           {!loading && !error && (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {rest.map((session) =>
                 isBreak(session) ? (
                   <BreakRow key={session.id} session={session} />
@@ -457,4 +481,21 @@ export default function ProgrammePage() {
       )}
     </div>
   );
+}
+
+function initials(name: string) {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
+function noteTime(timestamp: string) {
+  return new Intl.DateTimeFormat("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(timestamp));
 }

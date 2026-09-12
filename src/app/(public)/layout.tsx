@@ -13,7 +13,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
         <PublicSidebar />
 
         {/* pb leaves room for the fixed mobile bottom nav (lg:hidden) */}
-        <main className="flex-1 pb-16 lg:pb-0">{children}</main>
+        <main className="min-w-0 flex-1 overflow-x-hidden pb-16 lg:pb-0">{children}</main>
       </div>
 
       <PublicMobileNav />
