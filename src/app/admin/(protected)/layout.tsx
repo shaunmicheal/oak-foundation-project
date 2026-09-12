@@ -43,7 +43,7 @@ export default async function AdminProtectedLayout({
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
       {/* Mobile top header — blue bar with logo + event name (lg:hidden) */}
-      <PublicMobileHeader />
+      <PublicMobileHeader admin />
 
       <div className="flex flex-1">
         <AdminSidebar />

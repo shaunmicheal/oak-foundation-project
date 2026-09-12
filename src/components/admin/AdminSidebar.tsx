@@ -6,6 +6,18 @@ import { createClient } from "@/lib/supabase/client";
 
 const NAV_ITEMS = [
   {
+    label: "Register",
+    href: "/register",
+    icon: (
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+        <circle cx="10" cy="7" r="4" />
+        <line x1="19" y1="8" x2="19" y2="14" />
+        <line x1="22" y1="11" x2="16" y2="11" />
+      </svg>
+    ),
+  },
+  {
     label: "Check In",
     href: "/admin/checkin",
     icon: (

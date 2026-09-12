@@ -108,19 +108,19 @@ export default function AttendanceDashboard() {
   }, [debouncedSearch, attendeesRetry]);
 
   return (
-    <div className="mx-auto max-w-[704px] space-y-8 px-8 py-12 lg:max-w-[496px] lg:px-0 lg:py-9">
+    <div className="mx-auto w-full max-w-[704px] space-y-8 px-8 pb-28 pt-12 lg:max-w-[608px] lg:space-y-3 lg:px-0 lg:py-9">
       <div>
-        <h1 className="font-display text-[32px] font-bold leading-none text-[#101b31]">Attendance</h1>
-        <p className="mt-3 text-[18px] text-[#74819e]">
+        <h1 className="font-display text-[32px] font-bold leading-none text-[#101b31] lg:text-[20px]">Attendance</h1>
+        <p className="mt-3 text-[18px] text-[#74819e] lg:mt-1 lg:text-[12px]">
           Check-in tracking · 9–11 March 2026
         </p>
       </div>
 
       {/* ── Empty state (no check-ins yet) ── */}
       {!headcountLoading && headcount && headcount.checked_in === 0 && (
-        <div className="rounded-[32px] border border-[rgba(28,46,90,0.08)] bg-white px-8 py-16 text-center shadow-[0_5px_18px_rgba(28,46,90,0.09)] lg:px-10 lg:py-9">
+        <div className="rounded-[26px] border border-[rgba(28,46,90,0.08)] bg-white px-5 py-12 text-center shadow-[0_5px_18px_rgba(28,46,90,0.09)] lg:min-h-[270px] lg:rounded-[22px] lg:px-8 lg:py-8">
           <div className="flex justify-center mb-3">
-            <div className="flex h-[112px] w-[112px] items-center justify-center rounded-[42px] bg-[#edf1f7] text-[#9eb7d1]">
+            <div className="flex h-[112px] w-[112px] items-center justify-center rounded-[42px] bg-[#edf1f7] text-[#9eb7d1] lg:h-16 lg:w-16 lg:rounded-[20px]">
               <svg
                 width="48"
                 height="48"
@@ -138,16 +138,16 @@ export default function AttendanceDashboard() {
               </svg>
             </div>
           </div>
-          <p className="mt-8 font-display text-[26px] font-bold text-[#101b31]">
+          <p className="mt-7 font-display text-[22px] font-bold text-[#101b31] lg:mt-4 lg:text-[16px]">
             No check-ins yet
           </p>
-          <p className="mx-auto mt-4 max-w-[560px] text-[18px] leading-relaxed text-[#74819e] lg:text-[14px]">
+          <p className="mx-auto mt-3 max-w-[560px] text-[15px] leading-relaxed text-[#74819e] lg:mt-1 lg:text-[12px]">
             Attendees will appear here once they have been scanned at the event
             entrance.
           </p>
           <a
             href="/admin/checkin"
-            className="mt-8 inline-flex items-center gap-3 rounded-[28px] bg-[#193562] px-8 py-4 text-[18px] font-semibold text-white shadow-[0_10px_24px_rgba(25,53,98,0.22)] transition-colors hover:bg-[#10284e] lg:text-[14px]"
+            className="mt-7 inline-flex items-center gap-3 rounded-[22px] bg-[#193562] px-7 py-3.5 text-[15px] font-semibold text-white shadow-[0_10px_24px_rgba(25,53,98,0.22)] transition-colors hover:bg-[#10284e] lg:mt-4 lg:rounded-[14px] lg:px-5 lg:py-2.5 lg:text-[12px]"
           >
             <svg
               width="14"
@@ -170,8 +170,8 @@ export default function AttendanceDashboard() {
       )}
 
       {/* ── Event overview ── */}
-      <div className="rounded-[32px] border border-[rgba(28,46,90,0.08)] bg-white p-8 shadow-[0_5px_18px_rgba(28,46,90,0.08)] lg:p-5">
-        <p className="mb-5 text-[16px] font-semibold uppercase tracking-[0.12em] text-[#74819e] lg:text-[10px]">
+      <div className="rounded-[26px] border border-[rgba(28,46,90,0.08)] bg-white p-5 shadow-[0_5px_18px_rgba(28,46,90,0.08)] lg:min-h-[116px] lg:rounded-[22px] lg:p-4">
+        <p className="mb-4 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#74819e] lg:mb-2 lg:text-[8px]">
           Event Overview
         </p>
         {headcountLoading ? (
@@ -179,24 +179,24 @@ export default function AttendanceDashboard() {
             <div className="w-6 h-6 rounded-full border-2 border-[#162E55] border-t-transparent animate-spin" />
           </div>
         ) : headcount ? (
-          <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-[28px] bg-[#edf1f7] p-5 text-center lg:p-3">
-              <p className="text-[30px] font-bold text-[#101b31] lg:text-xl">
+          <div className="grid grid-cols-3 gap-2.5 lg:gap-3">
+            <div className="rounded-[18px] bg-[#edf1f7] px-2 py-4 text-center lg:rounded-[14px] lg:p-2">
+              <p className="text-[24px] font-bold text-[#101b31] lg:text-[20px]">
                 {headcount.total_registered}
               </p>
-              <p className="mt-1 text-[16px] text-[#74819e] lg:text-[11px]">Expected</p>
+              <p className="mt-1 text-[12px] text-[#74819e] lg:text-[9px]">Expected</p>
             </div>
-            <div className="rounded-[28px] bg-[#edf1f7] p-5 text-center lg:p-3">
-              <p className="text-[30px] font-bold text-[#193562] lg:text-xl">
+            <div className="rounded-[18px] bg-[#edf1f7] px-2 py-4 text-center lg:rounded-[14px] lg:p-2">
+              <p className="text-[24px] font-bold text-[#193562] lg:text-[20px]">
                 {headcount.checked_in}
               </p>
-              <p className="mt-1 text-[16px] text-[#74819e] lg:text-[11px]">Checked In</p>
+              <p className="mt-1 text-[12px] text-[#74819e] lg:text-[9px]">Checked In</p>
             </div>
-            <div className="rounded-[28px] bg-[#edf1f7] p-5 text-center lg:p-3">
-              <p className="text-[30px] font-bold text-[#74819e] lg:text-xl">
+            <div className="rounded-[18px] bg-[#edf1f7] px-2 py-4 text-center lg:rounded-[14px] lg:p-2">
+              <p className="text-[24px] font-bold text-[#74819e] lg:text-[20px]">
                 {Math.max(headcount.total_registered - headcount.checked_in, 0)}
               </p>
-              <p className="mt-1 text-[16px] text-[#74819e] lg:text-[11px]">Pending</p>
+              <p className="mt-1 text-[12px] text-[#74819e] lg:text-[9px]">Pending</p>
             </div>
           </div>
         ) : (
@@ -205,7 +205,7 @@ export default function AttendanceDashboard() {
       </div>
 
       {/* ── Attendee list ── */}
-      <div>
+      {(attendees.length > 0 || attendeesError || debouncedSearch) && <div>
         <div className="flex items-center justify-between mb-3 gap-3">
           {/* Search */}
           <div className="relative flex-1">
@@ -325,7 +325,7 @@ export default function AttendanceDashboard() {
             </div>
           </div>
         )}
-      </div>
+      </div>}
     </div>
   );
 }

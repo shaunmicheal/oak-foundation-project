@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 type Session = {
@@ -129,14 +130,14 @@ function SessionCard({ session }: { session: Session }) {
   const hasDetails = Boolean(session.description);
 
   return (
-    <div className={`rounded-[30px] ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW}`}>
+    <div className={`rounded-[30px] ${CARD_BORDER} bg-white p-5 ${CARD_SHADOW} lg:rounded-[14px] lg:p-3`}>
       <button
         type="button"
         onClick={() => hasDetails && setOpen((o) => !o)}
         className="flex w-full items-start gap-4 text-left"
       >
         <div className="w-[52px] shrink-0 text-left">
-          <p className="whitespace-nowrap text-[16px] font-bold leading-5 text-[#101b31]">
+          <p className="whitespace-nowrap text-[16px] font-bold leading-5 text-[#101b31] lg:text-[8px] lg:leading-3">
             {formatTime(session.start_time)}
           </p>
           {session.end_time && (
@@ -147,7 +148,7 @@ function SessionCard({ session }: { session: Session }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-3">
-            <p className="text-[18px] font-bold leading-snug text-[#101b31]">
+            <p className="text-[18px] font-bold leading-snug text-[#101b31] lg:text-[9px]">
               {session.title}
             </p>
             {session.category && (
@@ -157,10 +158,10 @@ function SessionCard({ session }: { session: Session }) {
             )}
           </div>
           {session.speaker && (
-            <p className="mt-2 text-[16px] text-[#8793ad]">{session.speaker}</p>
+            <p className="mt-2 text-[16px] text-[#8793ad] lg:mt-1 lg:text-[7px]">{session.speaker}</p>
           )}
           {session.location && (
-            <p className="mt-2 flex items-center gap-1.5 text-[16px] text-[#8793ad]">
+            <p className="mt-2 flex items-center gap-1.5 text-[16px] text-[#8793ad] lg:mt-1 lg:text-[7px]">
               <PinIcon />
               {session.location}
             </p>
@@ -178,12 +179,12 @@ function SessionCard({ session }: { session: Session }) {
 
 function BreakRow({ session }: { session: Session }) {
   return (
-    <div className="flex items-center gap-4 py-2">
-      <span className="w-[52px] shrink-0 text-[16px] font-medium text-[#8793ad]">
+    <div className="flex items-center gap-4 py-2 lg:gap-2 lg:py-1">
+      <span className="w-[52px] shrink-0 text-[16px] font-medium text-[#8793ad] lg:w-[28px] lg:text-[7px]">
         {formatTime(session.start_time)}
       </span>
       <span aria-hidden className="h-px flex-1 bg-slate-200" />
-      <span className="px-2 text-center text-[16px] text-[#8793ad]">
+      <span className="px-2 text-center text-[16px] text-[#8793ad] lg:px-1 lg:text-[7px]">
         {session.title}
       </span>
       <span aria-hidden className="h-px flex-1 bg-slate-200" />
@@ -228,24 +229,24 @@ export default function ProgrammePage() {
   const rest = daySessions.filter((s) => s !== featured);
 
   return (
-    <div className="mx-auto w-full max-w-[704px] px-[15px] pb-28 pt-[28px] lg:max-w-[608px] lg:px-0 lg:py-10">
+    <div className="mx-auto w-full max-w-[704px] px-[15px] pb-28 pt-[28px] lg:max-w-[396px] lg:px-0 lg:py-8">
       {/* ── Heading ── */}
       <div className="mb-5">
-        <h1 className="font-display text-[24px] font-bold leading-none tracking-tight text-[#101b31] lg:text-[32px]">
-          Programme
+        <h1 className="font-display text-[24px] font-bold leading-none tracking-tight text-[#101b31] lg:text-[16px]">
+            Programme
         </h1>
-        <p className="mt-2 text-[14px] text-[#8793ad] lg:mt-3 lg:text-[20px]">
-          OAK Partner Convening 2026
+        <p className="mt-2 text-[14px] text-[#8793ad] lg:mt-1 lg:text-[10px]">
+            OAK Partner Convening 2026
         </p>
       </div>
 
       {/* ── Schedule / Docs toggle ── */}
-      <div className="mb-5 flex h-[38px] rounded-[9px] bg-[#e5e9f1] p-1 lg:mb-7 lg:h-14">
+      <div className="mb-5 flex h-[38px] rounded-[9px] bg-[#e5e9f1] p-1 lg:mb-5 lg:h-[28px]">
         {(["schedule", "docs"] as const).map((v) => (
           <button
             key={v}
             onClick={() => setView(v)}
-            className={`flex-1 rounded-[12px] py-1 text-[12px] font-semibold capitalize transition-all lg:rounded-[16px] lg:py-2.5 lg:text-[16px] ${
+            className={`flex-1 rounded-[12px] py-1 text-[12px] font-semibold capitalize transition-all lg:rounded-[7px] lg:py-1 lg:text-[9px] ${
               view === v
                 ? "bg-white text-slate-900 shadow-[0_1px_3px_rgba(28,46,90,0.12)]"
                 : "text-slate-500 hover:text-slate-700"
@@ -264,9 +265,9 @@ export default function ProgrammePage() {
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#193562]"><path d="M15 5h4a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4" /><path d="M9 3h6v4H9z" /><path d="M8 12h8M8 16h5" /></svg>
               Session Notes
             </h2>
-            <button type="button" className="rounded-[11px] bg-[#193562] px-3 py-2 text-[10px] font-semibold text-white shadow-[0_5px_12px_rgba(25,53,98,0.22)] transition hover:bg-[#10284e] lg:px-4 lg:text-xs">
+            <Link href="/admin/notes" className="rounded-[11px] bg-[#193562] px-3 py-2 text-[10px] font-semibold text-white shadow-[0_5px_12px_rgba(25,53,98,0.22)] transition hover:bg-[#10284e] lg:px-4 lg:text-xs">
               + Add Note
-            </button>
+            </Link>
           </div>
           <div className="space-y-3">
           {docs.length === 0 && !loading && (
@@ -327,31 +328,31 @@ export default function ProgrammePage() {
         <>
 
           {/* ── Day tabs ── */}
-          <div className="mb-7 grid grid-cols-3 gap-2.5 lg:mb-12 lg:gap-3">
+          <div className="mb-7 grid grid-cols-3 gap-2.5 lg:mb-5 lg:gap-2">
             {EVENT_DAYS.map((d) => {
               const isActive = activeDay === d.date;
               return (
                 <button
                   key={d.date}
                   onClick={() => setActiveDay(d.date)}
-                    className={`h-[80px] rounded-[25px] px-3.5 py-3 text-left transition-all lg:h-[118px] lg:rounded-[32px] lg:px-5 lg:py-5 ${
+                    className={`h-[80px] rounded-[25px] px-3.5 py-3 text-left transition-all lg:h-[60px] lg:rounded-[16px] lg:px-3 lg:py-2 ${
                     isActive
                       ? `bg-[#162E55] text-white ${CARD_SHADOW}`
                       : `${CARD_BORDER} bg-white text-slate-900 hover:bg-slate-50`
                   }`}
                 >
                   <p
-                    className={`text-[9px] font-semibold tracking-widest uppercase lg:text-[11px] ${
+                    className={`text-[9px] font-semibold tracking-widest uppercase lg:text-[7px] ${
                       isActive ? "text-white/60" : "text-slate-400"
                     }`}
                   >
                     {d.weekday}
                   </p>
-                  <p className="mt-0.5 font-display text-[18px] font-bold leading-none lg:text-xl">
+                  <p className="mt-0.5 font-display text-[18px] font-bold leading-none lg:text-[13px]">
                     {d.day}
                   </p>
                   <p
-                    className={`mt-1 text-[11px] lg:text-xs ${
+                    className={`mt-1 text-[11px] lg:text-[8px] ${
                       isActive ? "text-white/60" : "text-slate-400"
                     }`}
                   >
@@ -391,7 +392,7 @@ export default function ProgrammePage() {
           {/* ── Featured session ── */}
           {!loading && !error && featured && (
             <div
-              className={`relative mb-4 min-h-[179px] overflow-hidden rounded-[25px] bg-gradient-to-br from-[#13203a] via-[#162e55] to-[#203b6b] p-5 text-white ${CARD_SHADOW} lg:mb-5 lg:min-h-[266px] lg:rounded-[32px] lg:p-7`}
+              className={`relative mb-4 min-h-[179px] overflow-hidden rounded-[25px] bg-gradient-to-br from-[#13203a] via-[#162e55] to-[#203b6b] p-5 text-white ${CARD_SHADOW} lg:mb-4 lg:min-h-[106px] lg:rounded-[16px] lg:p-3`}
             >
               <div
                 aria-hidden
@@ -408,18 +409,18 @@ export default function ProgrammePage() {
                   >
                     <path d="M12 2l2.9 6.26 6.6.56-5 4.36 1.5 6.45L12 16.9 5.99 19.63l1.5-6.45-5-4.36 6.6-.56L12 2z" />
                   </svg>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/65 lg:text-[13px]">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.14em] text-white/65 lg:text-[7px]">
                     Featured
                   </p>
                   <span
                     aria-hidden
                     className="h-1 w-1 rounded-full bg-white/40"
                   />
-                  <p className="text-[9px] font-medium text-white/60 lg:text-[13px]">
+                  <p className="text-[9px] font-medium text-white/60 lg:text-[7px]">
                     {timeRange(featured.start_time, featured.end_time)}
                   </p>
                 </div>
-                <p className="mt-5 font-display text-[20px] font-bold leading-[1.3] lg:mt-7 lg:text-[28px] lg:leading-[1.35]">
+                <p className="mt-5 font-display text-[20px] font-bold leading-[1.3] lg:mt-4 lg:text-[14px] lg:leading-[1.2]">
                   {featured.title}
                 </p>
                 {featured.speaker && (
@@ -427,13 +428,13 @@ export default function ProgrammePage() {
                     <span className="h-8 w-8 rounded-full bg-white/15 border border-white/20 flex items-center justify-center text-xs font-bold shrink-0">
                       {featured.speaker.charAt(0)}
                     </span>
-                    <span className="text-[12px] text-white/65 lg:text-[18px]">
+                    <span className="text-[12px] text-white/65 lg:text-[8px]">
                       {featured.speaker}
                     </span>
                   </p>
                 )}
                 {featured.location && (
-                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-white/60 lg:mt-4 lg:text-[16px]">
+                  <p className="mt-3 flex items-center gap-1.5 text-[11px] text-white/60 lg:mt-2 lg:text-[8px]">
                     <PinIcon className="opacity-70" />
                     {featured.location}
                   </p>
@@ -444,15 +445,15 @@ export default function ProgrammePage() {
 
           {/* ── Category legend ── */}
           {!loading && !error && daySessions.some((s) => s.category) && (
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-1 lg:mb-8 lg:gap-x-4">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-1 lg:mb-4 lg:gap-x-2">
               {CATEGORIES.map((c) => (
                 <span
                   key={c}
-                    className="flex items-center gap-1.5 text-[10px] font-medium text-[#8793ad] lg:gap-2 lg:text-[14px]"
+                    className="flex items-center gap-1.5 text-[10px] font-medium text-[#8793ad] lg:gap-1 lg:text-[7px]"
                 >
                   <span
                     aria-hidden
-                    className={`h-2 w-2 rounded-full ${CATEGORY_STYLES[c].dot} lg:h-3 lg:w-3`}
+                    className={`h-2 w-2 rounded-full ${CATEGORY_STYLES[c].dot} lg:h-1.5 lg:w-1.5`}
                   />
                   {c}
                 </span>

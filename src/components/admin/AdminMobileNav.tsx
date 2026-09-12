@@ -6,6 +6,18 @@ import { usePathname } from "next/navigation";
 /* Icons match the mobile design: scan frame, calendar, globe, grid */
 const ITEMS = [
   {
+    label: "Register",
+    href: "/register",
+    icon: (
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2" />
+        <circle cx="10" cy="7" r="4" />
+        <line x1="19" y1="8" x2="19" y2="14" />
+        <line x1="22" y1="11" x2="16" y2="11" />
+      </svg>
+    ),
+  },
+  {
     label: "Check In",
     href: "/admin/checkin",
     icon: (
@@ -65,7 +77,7 @@ export default function AdminMobileNav() {
       aria-label="Admin"
       className="fixed bottom-0 inset-x-0 z-40 lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur"
     >
-      <div className="grid grid-cols-4 px-2 pt-1.5 pb-1">
+      <div className="grid grid-cols-5 px-2 pt-1.5 pb-1">
         {ITEMS.map((item) => {
           const active = pathname.startsWith(item.href);
           return (
