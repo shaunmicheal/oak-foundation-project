@@ -15,10 +15,10 @@ export default function PublicSidebar() {
     : NAV_ITEMS;
 
   return (
-    <aside className="hidden w-52 shrink-0 flex-col border-r border-slate-200 bg-white px-4 py-6 lg:flex">
-      <img src="/logo.svg" alt="OAK Foundation" width={85} height={53} className="w-21.25 object-contain mb-1" />
+    <aside className="hidden w-[168px] shrink-0 flex-col border-r border-slate-200 bg-white px-3 py-6 lg:flex">
+      <img src="/logo.svg" alt="OAK Foundation" width={85} height={53} className="mb-1 w-[48px] object-contain" />
       <p className="font-display text-[10px] font-semibold tracking-wide text-slate-500 uppercase mb-6">
-        Partner Convening 2026
+          Partner Convening 2026
       </p>
 
       <nav className="space-y-1.5">
@@ -28,7 +28,7 @@ export default function PublicSidebar() {
             href={item.href}
             aria-current={isActive(item.href) ? "page" : undefined}
             className={[
-              "flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium transition-colors",
+                "flex items-center gap-2 rounded-xl px-2.5 py-2 text-[10px] font-medium transition-colors",
               isActive(item.href)
                 ? "bg-[#162E55] text-white"
                 : "text-slate-600 hover:bg-slate-100",
@@ -49,8 +49,8 @@ export default function PublicSidebar() {
           </svg>
         </div>
         <div>
-          <p className="text-xs font-medium text-slate-700 leading-tight">Harare, Zimbabwe</p>
-          <p className="text-[10px] text-slate-400 mt-0.5">9–11 March 2026</p>
+            <p className="text-[9px] font-medium leading-tight text-slate-700">Harare, Zimbabwe</p>
+            <p className="mt-0.5 text-[8px] text-slate-400">9–11 March 2026</p>
         </div>
       </div>
     </aside>

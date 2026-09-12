@@ -1,5 +1,5 @@
 /* Minimal offline-first service worker for the OAK PWA */
-const CACHE = "oak-pwa-v2";
+const CACHE = "oak-pwa-v3";
 const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {
@@ -7,7 +7,7 @@ self.addEventListener("install", (event) => {
     caches
       .open(CACHE)
       .then((cache) => cache.addAll([OFFLINE_URL]))
-      .then(() => self.skipWaiting())
+      .then(() => self.skipWaiting()),
   );
 });
 
@@ -16,9 +16,11 @@ self.addEventListener("activate", (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
+        Promise.all(
+          keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)),
+        ),
       )
-      .then(() => self.clients.claim())
+      .then(() => self.clients.claim()),
   );
 });
 
@@ -39,10 +41,8 @@ self.addEventListener("fetch", (event) => {
           return response;
         })
         .catch(() =>
-          caches
-            .match(request)
-            .then((hit) => hit || caches.match(OFFLINE_URL))
-        )
+          caches.match(request).then((hit) => hit || caches.match(OFFLINE_URL)),
+        ),
     );
     return;
   }
@@ -66,7 +66,7 @@ self.addEventListener("fetch", (event) => {
             caches.open(CACHE).then((cache) => cache.put(request, copy));
           }
           return response;
-        })
-    )
+        }),
+    ),
   );
 });
