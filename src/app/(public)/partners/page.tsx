@@ -19,9 +19,33 @@ type Partner = {
   contact_email?: string | null;
 };
 
-const CARD_SHADOW =
-  "shadow-[0_4px_16px_rgba(28,46,90,0.07),0_1px_3px_rgba(28,46,90,0.05)]";
-const CARD_BORDER = "border border-[rgba(28,46,90,0.1)]";
+const REGIONS = [
+  "All Regions",
+  "Global",
+  "Sub-Saharan Africa",
+  "Northern Europe",
+  "Middle East & North Africa",
+  "Western Europe",
+  "Europe",
+];
+
+const REGION_BY_PARTNER: Record<string, string> = {
+  "Open Society Foundations": "Global",
+  "Africa Climate Alliance": "Sub-Saharan Africa",
+  "Nordic Evaluation Centre": "Northern Europe",
+  "MENA Rights Group": "Middle East & North Africa",
+  "Digital Frontiers Institute": "Global / East Africa",
+  "Global Advocacy Lab": "Global",
+  "Sciences Po Paris": "Western Europe",
+  "Environmental Funders Group": "Europe",
+};
+
+const TAG_TONES = [
+  "bg-[#eef2f8] text-[#74819e]",
+  "bg-[#e9faf3] text-[#276c58]",
+  "bg-[#fff6e8] text-[#7a5b2b]",
+  "bg-[#f7effd] text-[#67467d]",
+];
 
 function getInitials(name: string) {
   return name
@@ -37,6 +61,7 @@ export default function PartnersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [search, setSearch] = useState("");
+  const [region, setRegion] = useState("All Regions");
   const [selected, setSelected] = useState<Partner | null>(null);
 
   useEffect(() => {
@@ -55,11 +80,21 @@ export default function PartnersPage() {
       });
   }, []);
 
-  const filtered = search.trim()
-    ? partners.filter((p) =>
-        p.name.toLowerCase().includes(search.toLowerCase()),
-      )
-    : partners;
+  const filtered = partners.filter((partner) => {
+    const searchText = [
+      partner.name,
+      partner.category,
+      ...(partner.focus_areas ?? []),
+    ]
+      .join(" ")
+      .toLowerCase();
+    const matchesSearch =
+      !search.trim() || searchText.includes(search.trim().toLowerCase());
+    const partnerRegion = REGION_BY_PARTNER[partner.name] ?? "Global";
+    const matchesRegion =
+      region === "All Regions" || partnerRegion.includes(region);
+    return matchesSearch && matchesRegion;
+  });
 
   const topLevel = filtered.filter((p) => !p.parent_partner_id);
   const subPartners = filtered.filter((p) => !!p.parent_partner_id);
@@ -70,193 +105,66 @@ export default function PartnersPage() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-152 px-5 py-8 lg:px-0 lg:py-10">
-      {/* ── Heading ── */}
-      <div className="mb-5">
-        <h1 className="font-display text-3xl lg:text-[32px] font-bold text-[#162E55] tracking-tight">
-          Partner Directory
-        </h1>
-        <p className="text-sm text-slate-500 mt-0.5">
-          {partners.length} partners · Partner Convening 2026
-        </p>
+    <div className="mx-auto w-full max-w-[704px] px-[18px] pb-28 pt-7 lg:max-w-[920px] lg:px-0 lg:py-10">
+      <h1 className="mb-6 font-display text-[25px] font-bold leading-tight tracking-tight text-[#101b31] lg:text-[32px]">Partner Directory</h1>
+
+      <div className="mb-5 overflow-hidden rounded-[24px] bg-white p-4 shadow-[0_4px_16px_rgba(28,46,90,0.08)] lg:p-5">
+        <div className="relative">
+          <div className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-[#74819e]">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+          </div>
+          <input type="text" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search organisations, focus areas…" className="h-14 w-full rounded-[16px] bg-[#edf1f7] pl-12 pr-4 text-[16px] text-[#101b31] outline-none placeholder:text-[#8793ad] focus:ring-2 focus:ring-[#193562]/20" />
+        </div>
+        <div className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {REGIONS.map((item) => <button key={item} type="button" onClick={() => setRegion(item)} className={`shrink-0 rounded-full px-4 py-2 text-[12px] font-semibold transition ${region === item ? "bg-[#193562] text-white" : "bg-[#edf1f7] text-[#74819e] hover:bg-[#e2e8f1]"}`}>{item}</button>)}
+        </div>
       </div>
 
-      {/* ── Search ── */}
-      <div className="relative mb-5">
-        <div className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-400">
-          <svg
-            width="14"
-            height="14"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="8" />
-            <line x1="21" y1="21" x2="16.65" y2="16.65" />
-          </svg>
-        </div>
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Search organisations, focus areas…"
-          className="w-full rounded-xl border border-slate-200 pl-9 pr-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#162E55]/30 focus:border-[#162E55] placeholder:text-slate-400"
-        />
-      </div>
+      {loading && <div className="flex justify-center py-12"><div className="h-8 w-8 animate-spin rounded-full border-2 border-[#162E55] border-t-transparent" /></div>}
+      {error && <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">Could not load partners. Please refresh.</div>}
+      {!loading && !error && filtered.length === 0 && <div className="rounded-2xl border border-slate-100 bg-slate-50 px-5 py-8 text-center"><p className="text-sm text-slate-400">{search ? "No partners match your search." : "No partners have been added yet."}</p></div>}
 
-      {/* ── Loading ── */}
-      {loading && (
-        <div className="flex justify-center py-12">
-          <div className="w-8 h-8 rounded-full border-2 border-[#162E55] border-t-transparent animate-spin" />
-        </div>
-      )}
+      {!loading && !error && topLevel.length > 0 && <div className="mb-7"><p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#74819e]">Sub-partners</p><div className="grid grid-cols-3 gap-3">{topLevel.slice(0, 3).map((partner) => <button key={partner.id} type="button" onClick={() => setSelected(partner)} className="flex min-h-[140px] flex-col items-center justify-center gap-2 rounded-[24px] border border-[rgba(28,46,90,0.06)] bg-white px-2 py-4 text-center shadow-[0_3px_12px_rgba(28,46,90,0.08)]"><div className="flex h-12 w-12 items-center justify-center rounded-[16px] bg-[#193562] text-xs font-bold text-white">{getInitials(partner.name)}</div><p className="text-[13px] font-medium leading-snug text-[#101b31]">{getInitials(partner.name)}</p><p className="text-[11px] text-[#8793ad]">{REGION_BY_PARTNER[partner.name] ?? "Global"}</p></button>)}</div></div>}
 
-      {/* ── Error ── */}
-      {error && (
-        <div className="rounded-2xl bg-red-50 border border-red-100 px-4 py-3 text-sm text-red-600">
-          Could not load partners. Please refresh.
-        </div>
-      )}
-
-      {/* ── Empty state ── */}
-      {!loading && !error && filtered.length === 0 && (
-        <div className="rounded-2xl border border-slate-100 bg-slate-50 px-5 py-8 text-center">
-          <p className="text-sm text-slate-400">
-            {search
-              ? "No partners match your search."
-              : "No partners have been added yet."}
-          </p>
-        </div>
-      )}
-
-      {/* ── Top partners (logo grid) ── */}
-      {!loading && !error && topLevel.length > 0 && (() => {
-        const topPartners = topLevel.slice(0, 3);
-        return (
-          <div className="mb-8 grid grid-cols-3 gap-2.5">
-            {topPartners.map((partner) => (
-              <div
-                key={partner.id}
-                className="group flex cursor-pointer flex-col items-center gap-2 rounded-2xl border border-[rgba(28,46,90,0.08)] bg-white p-3 text-center shadow-[0_2px_8px_rgba(28,46,90,0.04)] transition hover:border-[#162E55]/30 hover:shadow-[0_6px_18px_rgba(28,46,90,0.1)]"
-                onClick={() => setSelected(partner)}
-              >
-                {partner.logo_url ? (
-                  <img
-                    src={partner.logo_url}
-                    alt={partner.name}
-                    className="w-10 h-10 object-contain rounded-lg bg-slate-50"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-lg bg-[#162E55] text-white font-bold flex items-center justify-center text-xs">
-                    {getInitials(partner.name)}
-                  </div>
-                )}
-                <p className="text-xs font-medium text-slate-700 leading-snug">
-                  {partner.name}
-                </p>
-              </div>
-            ))}
-          </div>
-        );
-      })()}
-
-      {/* ── All partners ── */}
-      {!loading && !error && topLevel.length > 0 && (
-        <div>
-          <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-2">
-            All Partners
-          </p>
-          <div className="space-y-3">
-            {topLevel.map((partner) => {
-              const children = subPartners.filter(
-                (p) => p.parent_partner_id === partner.id,
-              );
-              return (
-                <div key={partner.id}>
-                  <PartnerRow
-                    partner={partner}
-                    onOpen={() => setSelected(partner)}
-                  />
-                  {children.length > 0 && (
-                    <div className="ml-4 mt-2 space-y-2 border-l-2 border-slate-100 pl-4">
-                      {children.map((child) => (
-                        <PartnerRow
-                          key={child.id}
-                          partner={child}
-                          isChild
-                          onOpen={() => setSelected(child)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+      {!loading && !error && topLevel.length > 0 && <div><p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[#74819e]">All Partners</p><div className="space-y-4">{topLevel.map((partner) => <PartnerRow key={partner.id} partner={partner} onOpen={() => setSelected(partner)} />)}</div></div>}
     </div>
   );
 }
 
 function PartnerRow({
   partner,
-  isChild,
   onOpen,
 }: {
   partner: Partner;
-  isChild?: boolean;
   onOpen: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onOpen}
-      className={`flex w-full cursor-pointer items-center gap-3 rounded-2xl ${CARD_BORDER} bg-white px-4 py-3 text-left shadow-[0_2px_8px_rgba(28,46,90,0.04)] transition hover:border-[#162E55]/30 hover:shadow-[0_6px_18px_rgba(28,46,90,0.1)] ${
-        isChild ? "py-2.5" : ""
-      }`}
+      className="w-full rounded-[24px] border border-[rgba(28,46,90,0.06)] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(28,46,90,0.08)] transition hover:border-[#193562]/30"
     >
-      {partner.logo_url ? (
-        <img
-          src={partner.logo_url}
-          alt={partner.name}
-          className={`object-contain rounded-lg bg-slate-50 shrink-0 ${
-            isChild ? "w-8 h-8" : "w-10 h-10"
-          }`}
-        />
-      ) : (
-        <div
-          className={`rounded-lg bg-[#162E55] text-white font-bold flex items-center justify-center shrink-0 ${
-            isChild ? "w-8 h-8 text-[10px]" : "w-10 h-10 text-xs"
-          }`}
-        >
+      <div className="flex items-start gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] bg-[#193562] text-xs font-bold text-white">
           {getInitials(partner.name)}
         </div>
-      )}
-
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium text-slate-800 truncate">
-          {partner.name}
-        </p>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div>
+              <p className="truncate text-[15px] font-semibold text-[#101b31]">{partner.name}</p>
+              <p className="mt-1 text-[13px] text-[#8793ad]">{REGION_BY_PARTNER[partner.name] ?? "Global"}</p>
+            </div>
+            <svg aria-hidden className="mt-1 shrink-0 text-[#74819e]" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6" /></svg>
+          </div>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {[partner.category ?? "Partner", ...(partner.focus_areas ?? [])].slice(0, 3).map((tag, index) => <span key={tag} className={`rounded-full px-3 py-1 text-[11px] font-semibold ${TAG_TONES[index % TAG_TONES.length]}`}>{tag}</span>)}
+          </div>
+        </div>
       </div>
-
-      <svg
-        aria-hidden
-        className="shrink-0 text-slate-300"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <polyline points="9 18 15 12 9 6" />
-      </svg>
+      <div className="mt-4 flex items-center justify-between border-t border-[#e4e8ef] pt-3 text-[12px] text-[#8793ad]">
+        <span>Partner since {partner.partner_since ?? "2020"}</span>
+        {partner.website_url && <span className="max-w-[55%] truncate font-semibold text-[#193562]">{partner.website_url.replace(/^https?:\/\//, "").replace(/\/$/, "")}&nbsp; ↗</span>}
+      </div>
     </button>
   );
 }

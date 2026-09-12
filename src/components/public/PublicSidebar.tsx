@@ -15,20 +15,20 @@ export default function PublicSidebar() {
     : NAV_ITEMS;
 
   return (
-    <aside className="hidden lg:flex lg:flex-col w-56 shrink-0 border-r border-slate-200 bg-white px-5 py-6">
+    <aside className="hidden w-52 shrink-0 flex-col border-r border-slate-200 bg-white px-4 py-6 lg:flex">
       <img src="/logo.svg" alt="OAK Foundation" width={85} height={53} className="w-21.25 object-contain mb-1" />
       <p className="font-display text-[10px] font-semibold tracking-wide text-slate-500 uppercase mb-6">
         Partner Convening 2026
       </p>
 
-      <nav className="space-y-2">
+      <nav className="space-y-1.5">
         {items.map((item) => (
           <Link
             key={item.href}
             href={item.href}
             aria-current={isActive(item.href) ? "page" : undefined}
             className={[
-              "flex items-center gap-2.5 rounded-xl text-sm font-medium px-3.5 py-3 transition-colors",
+              "flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium transition-colors",
               isActive(item.href)
                 ? "bg-[#162E55] text-white"
                 : "text-slate-600 hover:bg-slate-100",

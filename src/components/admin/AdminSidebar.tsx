@@ -103,7 +103,7 @@ export default function AdminSidebar() {
   }
 
   return (
-    <aside className="hidden lg:flex lg:flex-col w-40 shrink-0 border-r border-slate-200 bg-white px-4 py-6">
+    <aside className="hidden w-52 shrink-0 flex-col border-r border-slate-200 bg-white px-4 py-6 lg:flex">
       <img
         src="/logo.svg"
         alt="OAK Foundation"
@@ -115,7 +115,7 @@ export default function AdminSidebar() {
         Partner Convening 2026
       </p>
 
-      <nav className="space-y-1">
+      <nav className="space-y-1.5">
         {NAV_ITEMS.map((item) => {
           const isActive =
             item.href === "/admin/dashboard"
@@ -126,7 +126,7 @@ export default function AdminSidebar() {
               key={item.href}
               href={item.href}
               className={[
-                "flex items-center gap-2 rounded-lg text-sm font-medium px-3 py-2 transition-colors",
+                "flex items-center gap-2 rounded-xl px-3 py-3 text-sm font-medium transition-colors",
                 isActive
                   ? "bg-[#162E55] text-white"
                   : "text-slate-600 hover:bg-slate-100",

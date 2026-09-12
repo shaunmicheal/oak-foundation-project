@@ -46,7 +46,7 @@ function getInitials(name: string) {
 }
 
 export default function AttendanceDashboard() {
-  const [activeDay, setActiveDay] = useState(EVENT_DAYS[0].value);
+  const [activeDay] = useState(EVENT_DAYS[0].value);
   // Headcount is cached per day; "loading" is derived from whether the
   // selected day has finished loading (keeps setState out of effect bodies).
   const [headcountByDay, setHeadcountByDay] = useState<
@@ -108,40 +108,22 @@ export default function AttendanceDashboard() {
   }, [debouncedSearch, attendeesRetry]);
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
+    <div className="mx-auto max-w-[704px] space-y-8 px-8 py-12 lg:max-w-[496px] lg:px-0 lg:py-9">
       <div>
-        <h1 className="text-xl font-bold text-slate-900">Attendance</h1>
-        <p className="text-sm text-slate-500 mt-0.5">
+        <h1 className="font-display text-[32px] font-bold leading-none text-[#101b31]">Attendance</h1>
+        <p className="mt-3 text-[18px] text-[#74819e]">
           Check-in tracking · 9–11 March 2026
         </p>
       </div>
 
-      {/* ── Day tabs ── */}
-      <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
-        {EVENT_DAYS.map((day) => (
-          <button
-            key={day.value}
-            onClick={() => setActiveDay(day.value)}
-            className={[
-              "flex-1 py-2 text-sm font-medium rounded-lg transition-colors",
-              activeDay === day.value
-                ? "bg-white text-[#162E55] shadow-sm"
-                : "text-slate-500 hover:text-slate-700",
-            ].join(" ")}
-          >
-            {day.label}
-          </button>
-        ))}
-      </div>
-
       {/* ── Empty state (no check-ins yet) ── */}
       {!headcountLoading && headcount && headcount.checked_in === 0 && (
-        <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-8 text-center">
+        <div className="rounded-[32px] border border-[rgba(28,46,90,0.08)] bg-white px-8 py-16 text-center shadow-[0_5px_18px_rgba(28,46,90,0.09)] lg:px-10 lg:py-9">
           <div className="flex justify-center mb-3">
-            <div className="w-11 h-11 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center">
+            <div className="flex h-[112px] w-[112px] items-center justify-center rounded-[42px] bg-[#edf1f7] text-[#9eb7d1]">
               <svg
-                width="20"
-                height="20"
+                width="48"
+                height="48"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
@@ -156,16 +138,16 @@ export default function AttendanceDashboard() {
               </svg>
             </div>
           </div>
-          <p className="text-sm font-semibold text-slate-800">
+          <p className="mt-8 font-display text-[26px] font-bold text-[#101b31]">
             No check-ins yet
           </p>
-          <p className="text-xs text-slate-400 mt-1 mb-4">
+          <p className="mx-auto mt-4 max-w-[560px] text-[18px] leading-relaxed text-[#74819e] lg:text-[14px]">
             Attendees will appear here once they have been scanned at the event
             entrance.
           </p>
           <a
             href="/admin/checkin"
-            className="inline-flex items-center gap-2 bg-[#162E55] text-white text-sm font-medium rounded-xl px-4 py-2.5 hover:bg-[#0f2140] transition-colors"
+            className="mt-8 inline-flex items-center gap-3 rounded-[28px] bg-[#193562] px-8 py-4 text-[18px] font-semibold text-white shadow-[0_10px_24px_rgba(25,53,98,0.22)] transition-colors hover:bg-[#10284e] lg:text-[14px]"
           >
             <svg
               width="14"
@@ -188,8 +170,8 @@ export default function AttendanceDashboard() {
       )}
 
       {/* ── Event overview ── */}
-      <div className="rounded-3xl border border-[rgba(28,46,90,0.1)] bg-white shadow-[0_4px_16px_rgba(28,46,90,0.07)] p-5">
-        <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase mb-3">
+      <div className="rounded-[32px] border border-[rgba(28,46,90,0.08)] bg-white p-8 shadow-[0_5px_18px_rgba(28,46,90,0.08)] lg:p-5">
+        <p className="mb-5 text-[16px] font-semibold uppercase tracking-[0.12em] text-[#74819e] lg:text-[10px]">
           Event Overview
         </p>
         {headcountLoading ? (
@@ -198,23 +180,23 @@ export default function AttendanceDashboard() {
           </div>
         ) : headcount ? (
           <div className="grid grid-cols-3 gap-3">
-            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
-              <p className="text-xl font-bold text-[#162E55]">
+            <div className="rounded-[28px] bg-[#edf1f7] p-5 text-center lg:p-3">
+              <p className="text-[30px] font-bold text-[#101b31] lg:text-xl">
                 {headcount.total_registered}
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Expected</p>
+              <p className="mt-1 text-[16px] text-[#74819e] lg:text-[11px]">Expected</p>
             </div>
-            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
-              <p className="text-xl font-bold text-[#162E55]">
+            <div className="rounded-[28px] bg-[#edf1f7] p-5 text-center lg:p-3">
+              <p className="text-[30px] font-bold text-[#193562] lg:text-xl">
                 {headcount.checked_in}
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Checked In</p>
+              <p className="mt-1 text-[16px] text-[#74819e] lg:text-[11px]">Checked In</p>
             </div>
-            <div className="rounded-2xl bg-slate-50 border border-slate-100 p-3 text-center">
-              <p className="text-xl font-bold text-[#162E55]">
+            <div className="rounded-[28px] bg-[#edf1f7] p-5 text-center lg:p-3">
+              <p className="text-[30px] font-bold text-[#74819e] lg:text-xl">
                 {Math.max(headcount.total_registered - headcount.checked_in, 0)}
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">Pending</p>
+              <p className="mt-1 text-[16px] text-[#74819e] lg:text-[11px]">Pending</p>
             </div>
           </div>
         ) : (
